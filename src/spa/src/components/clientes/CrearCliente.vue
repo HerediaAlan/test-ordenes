@@ -2,18 +2,21 @@
     <transition name="modal-fade">
         <div class="modal-backdrop">
             <div class="modal">
-                <form action="http://localhost:10040/clientes" method="POST">
+                <form 
+                    v-on:submit.prevent="onSubmit" 
+                    action="http://localhost:10040/clientes" 
+                    method="POST">
                     <p>
                         <label for="nombre">Nombre</label>
                         <input type="text" v.model="nombre" name="nombre" id="nombre">
                     </p>
                     <p>
                         <label for="primerApellido">Primer Apellido</label>
-                        <input type="text" v.model="primerApellido" name="primer_apellido" id="primerApellido">
+                        <input type="text" v.model="primer_apellido" name="primer_apellido" id="primerApellido">
                     </p>
                     <p>
                         <label for="segundoApellido">Segundo Apellido</label>
-                        <input type="text" v.model="segundoApellido" name="segundo_apellido" id="segundoApellido">
+                        <input type="text" v.model="segundo_apellido" name="segundo_apellido" id="segundoApellido">
                     </p>
                     <p>
                         <label for="domicilio">Domicilio</label>
@@ -25,7 +28,7 @@
                     </p>
                     <p>
                         <label for="entidadFederativa">Entidad Federativa</label>
-                        <input type="text" v.model="entidadFederativa" name="entidad_federativa" id="entidadFederativa">
+                        <input type="text" v.model="entidad_federativa" name="entidad_federativa" id="entidadFederativa">
                     </p>
                     <p>
                         <label for="telefono">Telefono</label>
@@ -36,8 +39,8 @@
                         <input type="text" v.model="email" name="email" id="email">
                     </p>
 
-                    <input type="submit" value="Crear">
-                    <button @click="close">Cancelar</button>
+                    <p><input type="submit" value="Guardar"></p>
+                    <p><button @click="close">Cancelar</button></p>
                 </form>
             </div>
         </div>
@@ -47,7 +50,18 @@
 <script>
 export default {
     name: 'CrearCliente',
+    data() {
+        return {
+            nombre: '',
+            primer_apellido: '',
+            entidad_federativa: '',
+            telefono: ''
+        }
+    },
     methods: {
+        onSubmit(e) {
+            if (e) e.preventDefault();
+        },
         close() {
             this.$emit('close')
         }

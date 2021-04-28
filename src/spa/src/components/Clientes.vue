@@ -2,7 +2,7 @@
     <div class="component-div">
         <h2 class="header-text">Clientes</h2>
         <div id="clientes-header">
-            <input type="text" v-model="search" id="barra-busqueda" placeholder="Ingrese nombre a buscar">
+            <input type="text" id="barra-busqueda" placeholder="Ingrese nombre a buscar">
             <button @click="showModal">Crear cliente</button>
         </div>
         <CrearCliente 
@@ -64,11 +64,7 @@
             CrearCliente,
         },
         mounted() {
-            axios
-                .get('http://localhost:10040/clientes')
-                .then(response => {
-                    this.info = response
-                })
+            this.obtenerClientes()
         },
         methods: {
             showModal() {
@@ -77,11 +73,28 @@
             closeModal() {
                 this.isModalVisible = false
             },
+            obtenerClientes: function() {
+                axios
+                    .get('http://localhost:10040/clientes')
+                    .then(response => this.info = response)
+                    .catch(error => console.log(error.response.data))
+            },
             editarCliente: function (ID) {
                 alert(ID)
             },
             eliminarCliente: function (ID) {
-                alert(ID)
+                var r = confirm("¿Estás seguro de eliminar este registro?")
+                if (r == true) {
+                    axios
+                        .delete('http://localhost:10040/clientes/' + ID)
+                        .then(() => {
+                            // Borrar el cliente localmente para refrescar
+                            // https://stackoverflow.com/questions/53142220/auto-reload-list-items-after-deletion-vue-js
+                            const item = this.info.data.data.findIndex(p => p.id === ID)
+                            this.info.data.data.splice(item, 1)
+                        })
+                        .catch(error => console.log(error.response.data))
+                }
             }
         }
     }

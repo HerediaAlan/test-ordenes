@@ -63,7 +63,7 @@ func (gormDB *GormDB) EliminarCliente(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H {"status": http.StatusNotFound, "data": "Cliente no encontrado"})
 	}
 
-	err = gormDB.DB.Where("ID = ?", id).Delete(&cliente).Error
+	err = gormDB.DB.Where("id = ?", id).Delete(&cliente).Error
 	if err != nil {
 		result = gin.H{
 			"status": 400,
