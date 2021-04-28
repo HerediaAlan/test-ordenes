@@ -8,18 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InicializarRutasClientes(router *gin.Engine) *gin.Engine {
+func InicializarRutasOrdenes(router *gin.Engine) *gin.Engine {
 	db := controladores.BuildGormDB()
 	gormDB := &controladores.GormDB{DB: db}
 
 	// Para permitir llamadas desde una webapp como Axios.js
 	router.Use(cors.Default())
 
-	router.GET("/clientes", gormDB.ObtenerClientes)
-	router.GET("/clientes/:ID", gormDB.ObtenerClientesSegunID)
-	router.POST("/clientes", gormDB.CrearCliente)
-	router.PUT("/clientes/:ID", gormDB.ActualizarCliente)
-	router.DELETE("/clientes/:ID", gormDB.EliminarCliente)
+	router.GET("/ordenes", gormDB.ObtenerOrdenes)
+	router.POST("/ordenes", gormDB.CrearOrden)
 
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H {"code": "PAGE_NOT_FOUND", "message": "Page not found"})

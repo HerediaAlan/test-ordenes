@@ -138,6 +138,7 @@
         border: 1px solid rgba(0, 0, 0, .12);
         background: white;
         margin-bottom: 15px;
+        margin-right: 20px;
     }
 
     #clientes-tabla {
@@ -162,6 +163,10 @@
         padding: 7px;
         font-weight: bold;
         color: white;
+    }
+
+    .btnCrear {
+        background: lightblue;
     }
 
     .btnEditar {

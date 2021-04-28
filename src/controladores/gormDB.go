@@ -17,6 +17,7 @@ func BuildGormDB() *gorm.DB {
 	}
 
 	db.AutoMigrate(&modelos.Cliente{})
+	db.AutoMigrate(&modelos.Orden{})
 	var cliente modelos.Cliente
 	if err := db.First(&cliente).Error; err != nil {
 		cliente1 := modelos.Cliente{Nombre: "José", PrimerApellido: "Pérez", SegundoApellido: "Sánchez", Domicilio: "Av. Jalisco y 26", Ciudad: "San Luis Río Colorado", EntidadFederativa: "Sonora", Telefono: "6530005030", Email: "jose@gmail.com"}

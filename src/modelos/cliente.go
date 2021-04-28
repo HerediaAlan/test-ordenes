@@ -12,6 +12,7 @@ type Cliente struct {
 	EntidadFederativa string `sql:"type:NVARCHAR(50) CHARACTER SET utf8 COLLATE utf8_general_ci" json:"entidadFederativa"`
 	Telefono          string `sql:"type:VARCHAR(17)" json:"telefono"`
 	Email             string `sql:"type:VARCHAR(50)" json:"email"`
+	Ordenes           []Orden
 }
 
 func (c *Cliente) TableName() string {
