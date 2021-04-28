@@ -1,7 +1,14 @@
 <template>
-    <div>
-        <h2>Clientes</h2>
-        <table>
+    <div class="component-div">
+        <h2 class="header-text">Clientes</h2>
+        <div id="clientes-header">
+            <input type="text" v-model="search" id="barra-busqueda" placeholder="Ingrese nombre a buscar">
+            <button @click="showModal">Crear cliente</button>
+        </div>
+        <CrearCliente 
+            v-show="isModalVisible"
+            @close="closeModal"/>
+        <table id="clientes-tabla">
             <thead>
                 <tr>
                     <th>Nombre</th>
@@ -12,6 +19,7 @@
                     <th>Entidad Federativa</th>
                     <th>Telefono</th>
                     <th>Email</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,6 +32,10 @@
                     <td>{{ item.entidadFederativa }}</td>
                     <td>{{ item.telefono }}</td>
                     <td>{{ item.email }}</td>
+                    <td colspan="2">
+                        <button v-on:click='editarCliente(item.ID)' class="btnEditar">Editar</button>
+                        <button v-on:click='eliminarCliente(item.ID)' class="btnEliminar">Eliminar</button>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -35,6 +47,7 @@
     // https://github.com/axios/axios
     // https://vuejs.org/v2/cookbook/using-axios-to-consume-apis.html
     import { mdiAccount } from '@mdi/js';
+    import CrearCliente from './clientes/CrearCliente'
     const axios = require('axios')
 
     export default {
@@ -43,8 +56,12 @@
         icon: mdiAccount,
         data() {
             return {
-                info: {}
+                info: {},
+                isModalVisible: false
             }
+        },
+        components: {
+            CrearCliente,
         },
         mounted() {
             axios
@@ -52,12 +69,73 @@
                 .then(response => {
                     this.info = response
                 })
+        },
+        methods: {
+            showModal() {
+                this.isModalVisible = true
+            },
+            closeModal() {
+                this.isModalVisible = false
+            },
+            editarCliente: function (ID) {
+                alert(ID)
+            },
+            eliminarCliente: function (ID) {
+                alert(ID)
+            }
         }
     }
 </script>
 
 <style scoped>
-    body {
-        background: #212121;
+    .componentView {
+        display: grid;
+        grid-template-rows: 60px 60px auto;
+        grid-template-areas:
+            "header-text"
+            "barra-busqueda"
+            "clientes-tabla";    
     }
+
+    .header-text {
+        grid-area: header-text;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+    #barra-busqueda {
+        grid-area: barra-busqueda;
+        padding: 4px 12px;
+        color: rgba(0, 0, 0, .70);
+        border: 1px solid rgba(0, 0, 0, .12);
+        background: white;
+        margin-bottom: 15px;
+    }
+
+    #clientes-tabla {
+        grid-area: clientes-tabla;
+    }
+
+    th {
+        text-align: left;
+        padding-top: 7px;
+        padding-bottom: 7px;
+        padding-right: 5px;
+    }
+
+    td {
+        text-align: left;
+        font-size: 14px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    .btnEditar {
+        background: lightgreen;
+    }
+
+    .btnEliminar {
+        background: lightcoral;
+    }
+
 </style>
