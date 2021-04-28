@@ -54,12 +54,64 @@ const axios = require('axios')
 export default {
     name: 'CrearCliente',
     props: {
-        cliente: null
+        cliente: {
+            type: String,
+            default: "",
+        },
+    },
+    data() {
+        return {
+            nombre: "",
+            primerApellido: "",
+            segundoApellido: "",
+            domicilio: "",
+            ciudad: "",
+            entidadFederativa: "",
+            telefono: "",
+            email: ""
+        }        
+    },
+    watch: {
+        cliente: function() {
+            this.obtenerDatos()
+        }
+    },
+    computed: {
+        idCliente: function() {
+            return this.cliente.toString()
+        }
+    },
+    beforeUpdate() {
+        this.obtenerDatos()
     },
     methods: {
+        obtenerDatos() {
+            console.log(this.idCliente)
+            axios
+                .get('http://localhost:10040/clientes/' + this.idCliente)
+                .then(response => {
+                    const respuesta = response.data.data[0]
+                    document.getElementById("nombre").value = respuesta.nombre
+                    this.nombre = respuesta.nombre
+                    document.getElementById("primerApellido").value = respuesta.primerApellido
+                    this.primerApellido = respuesta.primerApellido
+                    document.getElementById("segundoApellido").value = respuesta.segundoApellido
+                    this.segundoApellido = respuesta.segundoApellido
+                    document.getElementById("domicilio").value = respuesta.domicilio
+                    this.domicilio = respuesta.domicilio
+                    document.getElementById("ciudad").value = respuesta.ciudad
+                    this.ciudad = respuesta.ciudad
+                    document.getElementById("entidadFederativa").value = respuesta.entidadFederativa
+                    this.entidadFederativa = respuesta.entidadFederativa
+                    document.getElementById("telefono").value = respuesta.telefono
+                    this.telefono = respuesta.telefono
+                    document.getElementById("email").value = respuesta.email
+                    this.email = respuesta.email
+                    })
+        },
         onSubmit() {
             // https://stackoverflow.com/questions/49162345/prevent-form-from-submitting-with-vue-js-and-axios
-            if (!this.cliente) {
+            if (this.cliente === "") {
                 axios({
                     method: 'post',
                     url: 'http://localhost:10040/clientes',
@@ -73,7 +125,7 @@ export default {
             } else {
                 axios({
                     method: 'put',
-                    url: 'http://localhost:10040/clientes/',
+                    url: 'http://localhost:10040/clientes/' + this.idCliente,
                     data: new FormData(document.getElementById('form-cliente')),
                     config: {
                         headers: {'Content-Type': 'multipart/form-data'}
