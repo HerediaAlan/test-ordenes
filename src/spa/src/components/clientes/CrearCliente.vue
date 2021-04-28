@@ -3,8 +3,8 @@
         <div class="modal-backdrop">
             <div class="modal">
                 <form 
+                    id="form-cliente"
                     v-on:submit.prevent="onSubmit" 
-                    action="http://localhost:10040/clientes" 
                     method="POST">
                     <p>
                         <label for="nombre">Nombre</label>
@@ -38,9 +38,10 @@
                         <label for="email">Email</label>
                         <input type="text" v.model="email" name="email" id="email">
                     </p>
-
-                    <p><input type="submit" value="Guardar"></p>
-                    <p><button @click="close">Cancelar</button></p>
+                    <div class="form-buttons">
+                        <p><input type="submit" value="Guardar" class="btn"></p>
+                        <p><input type="button" name="cancel" value="Cancelar" class="btn" v-on:click="close"/></p>
+                    </div>
                 </form>
             </div>
         </div>
@@ -48,19 +49,39 @@
 </template>
 
 <script>
+const axios = require('axios')
+
 export default {
     name: 'CrearCliente',
-    data() {
-        return {
-            nombre: '',
-            primer_apellido: '',
-            entidad_federativa: '',
-            telefono: ''
-        }
+    props: {
+        cliente: null
     },
     methods: {
-        onSubmit(e) {
-            if (e) e.preventDefault();
+        onSubmit() {
+            // https://stackoverflow.com/questions/49162345/prevent-form-from-submitting-with-vue-js-and-axios
+            if (!this.cliente) {
+                axios({
+                    method: 'post',
+                    url: 'http://localhost:10040/clientes',
+                    data: new FormData(document.getElementById('form-cliente')),
+                    config: {
+                        headers: {'Content-Type': 'multipart/form-data'}
+                }
+                })
+                .then(this.Close())
+                .catch(function(response) { console.log('error', response); });
+            } else {
+                axios({
+                    method: 'put',
+                    url: 'http://localhost:10040/clientes/',
+                    data: new FormData(document.getElementById('form-cliente')),
+                    config: {
+                        headers: {'Content-Type': 'multipart/form-data'}
+                }
+                })
+                .then(this.Close())
+                .catch(function(response) { console.log('error', response); })
+            }
         },
         close() {
             this.$emit('close')
@@ -80,6 +101,34 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    #form-cliente {
+        padding: 15px;
+        display: grid;
+        grid-template-columns: auto auto;
+        grid-template-rows: auto auto;
+        column-gap: 5px;
+        justify-items: center;
+        height: auto;
+    }
+
+    #form-cliente p {
+        display: grid;
+        justify-self: start;
+        margin: 0px 10px 10px 0px;
+    }
+
+    .form-buttons {
+        margin-top: 15px;
+        grid-column: 1 / span 2;
+        width: 100%;
+    }
+
+    .btn {
+        padding: 7px;
+        color: white;
+        background: blue;
     }
 
     .modal {

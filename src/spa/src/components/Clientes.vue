@@ -2,10 +2,11 @@
     <div class="component-div">
         <h2 class="header-text">Clientes</h2>
         <div id="clientes-header">
-            <input type="text" id="barra-busqueda" placeholder="Ingrese nombre a buscar">
-            <button @click="showModal">Crear cliente</button>
+            <input v-model="search" type="text" id="barra-busqueda" placeholder="Ingrese nombre a buscar">
+            <button @click="showModal" class="btnAcciones btnCrear">Crear cliente</button>
         </div>
         <CrearCliente 
+            cliente="clienteSeleccionado"
             v-show="isModalVisible"
             @close="closeModal"/>
         <table id="clientes-tabla">
@@ -23,18 +24,18 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="item in info.data.data" :key="item.ID">
-                    <td>{{ item.nombre }}</td>
-                    <td>{{ item.primerApellido }}</td>
-                    <td>{{ item.segundoApellido }}</td>
-                    <td>{{ item.domicilio }}</td>
-                    <td>{{ item.ciudad }}</td>
-                    <td>{{ item.entidadFederativa }}</td>
-                    <td>{{ item.telefono }}</td>
-                    <td>{{ item.email }}</td>
+                <tr v-for="cliente in filtrarClientes" :key="cliente.ID">
+                    <td>{{ cliente.nombre }}</td>
+                    <td>{{ cliente.primerApellido }}</td>
+                    <td>{{ cliente.segundoApellido }}</td>
+                    <td>{{ cliente.domicilio }}</td>
+                    <td>{{ cliente.ciudad }}</td>
+                    <td>{{ cliente.entidadFederativa }}</td>
+                    <td>{{ cliente.telefono }}</td>
+                    <td>{{ cliente.email }}</td>
                     <td colspan="2">
-                        <button v-on:click='editarCliente(item.ID)' class="btnEditar">Editar</button>
-                        <button v-on:click='eliminarCliente(item.ID)' class="btnEliminar">Eliminar</button>
+                        <button v-on:click='editarCliente(cliente.ID)' class="btnAcciones btnEditar">Editar</button>
+                        <button v-on:click='eliminarCliente(cliente.ID)' class="btnAcciones btnEliminar">Eliminar</button>
                     </td>
                 </tr>
             </tbody>
@@ -57,14 +58,29 @@
         data() {
             return {
                 info: {},
-                isModalVisible: false
+                search: "",
+                isModalVisible: false,
+                creatingNewClient: false
             }
         },
         components: {
             CrearCliente,
         },
-        mounted() {
+        beforeMount() {
             this.obtenerClientes()
+        },
+        computed: {
+            filtrarClientes: function() {
+                // Basado en https://stackoverflow.com/questions/62711939/filtering-table-on-the-frontend-vue-js
+                let clientesFiltrados = this.info.data.data
+                if (this.search.length != 0) { 
+                    clientesFiltrados = clientesFiltrados.filter( cliente => {
+                        return cliente.nombre.search(this.search) != -1
+                    })
+                }
+
+                return clientesFiltrados
+            }
         },
         methods: {
             showModal() {
@@ -90,8 +106,8 @@
                         .then(() => {
                             // Borrar el cliente localmente para refrescar
                             // https://stackoverflow.com/questions/53142220/auto-reload-list-items-after-deletion-vue-js
-                            const item = this.info.data.data.findIndex(p => p.id === ID)
-                            this.info.data.data.splice(item, 1)
+                            const cliente = this.info.data.data.findIndex(p => p.id === ID)
+                            this.info.data.data.splice(cliente, 1)
                         })
                         .catch(error => console.log(error.response.data))
                 }
@@ -141,6 +157,12 @@
         font-size: 14px;
         padding-top: 5px;
         padding-bottom: 5px;
+    }
+
+    .btnAcciones {
+        padding: 7px;
+        font-weight: bold;
+        color: white;
     }
 
     .btnEditar {

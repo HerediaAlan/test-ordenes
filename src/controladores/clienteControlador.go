@@ -52,6 +52,47 @@ func (gormDB *GormDB) CrearCliente(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
+func (gormDB *GormDB) ActualizarCliente(c *gin.Context) {
+	id := c.Query("id")
+	var (
+		cliente      modelos.Cliente
+		nuevoCliente modelos.Cliente
+		result       gin.H
+	)
+
+	err := gormDB.DB.First(&cliente, id).Error
+	if err != nil {
+		result = gin.H {
+			"status": 400,
+			"result": "Cliente especificado no encontrado",
+		}
+	}
+
+	nuevoCliente.Nombre            = c.PostForm("nombre")
+	nuevoCliente.PrimerApellido    = c.PostForm("primer_apellido")
+	nuevoCliente.SegundoApellido   = c.PostForm("segundo_apellido")
+	nuevoCliente.Domicilio         = c.PostForm("domicilio")
+	nuevoCliente.Ciudad            = c.PostForm("ciudad")
+	nuevoCliente.EntidadFederativa = c.PostForm("entidad_federativa")
+	nuevoCliente.Telefono          = c.PostForm("telefono")
+	nuevoCliente.Email             = c.PostForm("email")
+
+	err = gormDB.DB.Model(&cliente).Updates(nuevoCliente).Error
+	if err != nil {
+		result = gin.H {
+			"status": 400,
+			"result": "No se pudo actualizar el cliente",
+		}
+	} else {
+		result = gin.H {
+			"status": 200,
+			"result": "Datos actualizados correctamente",
+		}
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func (gormDB *GormDB) EliminarCliente(c *gin.Context) {
 	var (
 		cliente modelos.Cliente

@@ -19,6 +19,7 @@ func InicializarRutas() *gin.Engine {
 	router.GET("/clientes", gormDB.ObtenerClientes)
 	router.GET("/clientes:ID", gormDB.ObtenerClientesSegunID)
 	router.POST("/clientes", gormDB.CrearCliente)
+	router.PUT("/clientes/:ID", gormDB.ActualizarCliente)
 	router.DELETE("/clientes/:ID", gormDB.EliminarCliente)
 
 	router.NoRoute(func(c *gin.Context) {
