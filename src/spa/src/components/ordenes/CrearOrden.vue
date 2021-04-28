@@ -37,10 +37,16 @@ const axios = require('axios')
 
 export default {
     name: 'CrearOrden',
+    props: {
+        orden: {
+            type: String,
+            default: "",
+        },
+    },
     data() {
         return {
             fechaCreacion: "",
-            clienteID: "",
+            ordenID: "",
             asunto: "",
             descripcion: "",
         }        
@@ -51,7 +57,7 @@ export default {
     methods: {
         onSubmit() {
             // https://stackoverflow.com/questions/49162345/prevent-form-from-submitting-with-vue-js-and-axios
-            if (this.clienteID === "") {
+            if (this.orden === "") {
                 axios({
                     method: 'post',
                     url: 'http://localhost:10040/ordenes',

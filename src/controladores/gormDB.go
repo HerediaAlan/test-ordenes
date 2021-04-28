@@ -1,9 +1,11 @@
 package controladores
 
 import (
+	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"test-ordenes/modelos"
+	"github.com/brianvoe/gofakeit/v6"
 )
 
 type GormDB struct {
@@ -18,12 +20,20 @@ func BuildGormDB() *gorm.DB {
 
 	db.AutoMigrate(&modelos.Cliente{})
 	db.AutoMigrate(&modelos.Orden{})
+	db.AutoMigrate(&modelos.OrdenComentario{})
 	var cliente modelos.Cliente
+
+	gofakeit.Seed(0)
 	if err := db.First(&cliente).Error; err != nil {
-		cliente1 := modelos.Cliente{Nombre: "José", PrimerApellido: "Pérez", SegundoApellido: "Sánchez", Domicilio: "Av. Jalisco y 26", Ciudad: "San Luis Río Colorado", EntidadFederativa: "Sonora", Telefono: "6530005030", Email: "jose@gmail.com"}
-		cliente2 := modelos.Cliente{Nombre: "Adriana", PrimerApellido: "García", SegundoApellido: "Ibarra", Domicilio: "Av. Tlaxcala 23 y 24", Ciudad: "San Luis Río Colorado", EntidadFederativa: "Sonora", Telefono: "6539998877", Email: "adriana.garcia@gmail.com"}
-		db.Create(&cliente1)
-		db.Create(&cliente2)
+		for i := 1; i < 10; i++ {
+			cliente = modelos.Cliente{
+				Nombre: gofakeit.FirstName(), PrimerApellido: gofakeit.LastName(), 
+				SegundoApellido: gofakeit.LastName(), Domicilio: fmt.Sprintf("%s %s", gofakeit.StreetName(), gofakeit.StreetNumber()), 
+				Ciudad: gofakeit.City(), EntidadFederativa: gofakeit.State(), 
+				Telefono: gofakeit.Phone(), Email: gofakeit.Email(),
+			}
+			db.Create(&cliente)
+		}
 	}
 
 	return db

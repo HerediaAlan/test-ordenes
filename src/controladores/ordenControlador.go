@@ -27,6 +27,7 @@ func (gormDB *GormDB) CrearOrden(c *gin.Context) {
 		result gin.H
 	)
 
+	// https://www.pauladamsmith.com/blog/2011/05/go_time.html
 	layout := "2006-01-02 15:04"
 	t, err := time.Parse(layout, c.PostForm("fecha_creacion"))
 	if err != nil {
@@ -57,6 +58,51 @@ func (gormDB *GormDB) CrearOrden(c *gin.Context) {
 		"status": 200,
 		"result": orden,
 	}
+	c.JSON(http.StatusOK, result)
+}
+/*
+func (gormDB *GormDB) CrearComentarioOrden(c *gin.Context) {
+	var (
+		comentario modelos.OrdenComentario
+		result gin.H
+	)
+
+	layout := "2006-01-02 15:04"
+	t, err := time.Parse(layout, c.PostForm("fecha_creacion"))
+	if err != nil {
+		result = gin.H {
+			"status": 400,
+			"result": "Error al convertir fecha",
+		}
+		c.JSON(400, result)
+		return
+	}
+}
+*/
+func (gormDB *GormDB) EliminarOrden(c *gin.Context) {
+	var (
+		orden modelos.Orden
+		result gin.H
+	)
+	id := c.Param("ID")
+	err := gormDB.DB.First(&orden, id).Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H {"status": http.StatusNotFound, "data": "Orden no encontrado"})
+	}
+
+	err = gormDB.DB.Where("id = ?", id).Delete(&orden).Error
+	if err != nil {
+		result = gin.H{
+			"status": 400,
+			"result": "Error al eliminar orden",
+		}
+	} else {
+		result = gin.H{
+			"status": 200,
+			"result": "Orden eliminado",
+		}
+	}
+
 	c.JSON(http.StatusOK, result)
 }
 

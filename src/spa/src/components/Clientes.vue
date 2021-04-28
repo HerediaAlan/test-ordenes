@@ -2,7 +2,7 @@
     <div class="component-div">
         <h2 class="header-text">Clientes</h2>
         <div id="clientes-header">
-            <input v-model="search" id="barra-busqueda" placeholder="Ingrese nombre a buscar">
+            <input v-model="search" id="barra-busqueda" placeholder="Ingrese el nombre a buscar">
             <button @click="showModal" class="btnAcciones btnCrear">Crear cliente</button>
         </div>
         <CrearCliente 
@@ -24,7 +24,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="cliente in info.data.data" :key="cliente.ID">
+                <tr v-for="cliente in filtrarClientes" :key="cliente.ID">
                     <td>{{ cliente.nombre }}</td>
                     <td>{{ cliente.primerApellido }}</td>
                     <td>{{ cliente.segundoApellido }}</td>
@@ -70,9 +70,9 @@
         computed: {
             filtrarClientes() {
                 // Basado en https://stackoverflow.com/questions/62711939/filtering-table-on-the-frontend-vue-js
-                let clientesFiltrados = this.info.data.data
+                let clientesFiltrados = this.info
                 if (this.search.length != 0) { 
-                    clientesFiltrados = clientesFiltrados.data.filter( cliente => {
+                    clientesFiltrados = clientesFiltrados.filter( cliente => {
                         return cliente.nombre.search(this.search) != -1
                     })
                 }
@@ -90,7 +90,7 @@
             obtenerClientes() {
                 axios
                     .get('http://localhost:10040/clientes')
-                    .then(response => this.info = response)
+                    .then(response => this.info = response.data.data)
                     .catch(error => console.log(error.response.data))
             },
             editarCliente: function (ID) {
@@ -139,10 +139,12 @@
         background: white;
         margin-bottom: 15px;
         margin-right: 20px;
+        width: 300px;
     }
 
     #clientes-tabla {
         grid-area: clientes-tabla;
+        width: 100%;
     }
 
     th {
