@@ -7,41 +7,34 @@
                 id="barra-busqueda"
                 placeholder="Ingrese el nombre a buscar"
             />
-            <button @click="showModal" class="btnAcciones btnCrear">
-                Crear cliente
-            </button>
+            <b-button
+                @click="showModal"
+                variant="primary"
+                size="sm"
+            >Añadir cliente</b-button>
         </div>
         <CrearCliente
             v-bind:cliente="seleccion"
             v-show="isModalVisible"
             @close="closeModal"
         />
-        <table id="clientes-tabla">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Primer Apellido</th>
-                    <th>Segundo Apellido</th>
-                    <th>Domicilio</th>
-                    <th>Ciudad</th>
-                    <th>Entidad Federativa</th>
-                    <th>Telefono</th>
-                    <th>Email</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="cliente in filtrarClientes" :key="cliente.ID">
-                    <td>{{ cliente.nombre }}</td>
-                    <td>{{ cliente.primerApellido }}</td>
-                    <td>{{ cliente.segundoApellido }}</td>
-                    <td>{{ cliente.domicilio }}</td>
-                    <td>{{ cliente.ciudad }}</td>
-                    <td>{{ cliente.entidadFederativa }}</td>
-                    <td>{{ cliente.telefono }}</td>
-                    <td>{{ cliente.email }}</td>
-                    <td colspan="2">
-                        <button
+        <b-pagination
+            v-model="currentPage"
+            :total-rows="rows"
+            :per-page="perPage"
+            aria-controls="clientes-tabla"
+        ></b-pagination>
+        <b-table 
+            id="clientes-tabla"
+            :items="filtrarClientes" 
+            :per-page="perPage"
+            :current-page="currentPage"
+            :fields="columnas"
+            striped hover small
+        >
+        </b-table>
+         <!-- 
+             <button
                             v-on:click="editarCliente(cliente.ID)"
                             class="btnAcciones btnEditar"
                         >
@@ -53,10 +46,7 @@
                         >
                             Eliminar
                         </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+         -->
     </div>
 </template>
 
@@ -72,7 +62,10 @@ export default {
     title: "Clientes",
     data() {
         return {
+            currentPage: 1,
+            perPage: 10,
             info: {},
+            columnas: ["nombre", "primerApellido", "segundoApellido", "domicilio", "ciudad", "entidadFederativa", "telefono", "email"],
             search: "",
             seleccion: "",
             isModalVisible: false,
@@ -96,6 +89,9 @@ export default {
 
             return clientesFiltrados;
         },
+        rows() {
+            return this.info.length
+        }
     },
     methods: {
         showModal() {
@@ -135,66 +131,44 @@ export default {
 </script>
 
 <style scoped>
-.componentView {
-    display: grid;
-    grid-template-rows: 60px 60px auto;
-    grid-template-areas:
-        "header-text"
-        "barra-busqueda"
-        "clientes-tabla";
-}
+    .header-text {
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
 
-.header-text {
-    grid-area: header-text;
-    margin-top: 15px;
-    margin-bottom: 15px;
-}
+    #barra-busqueda {
+        padding: 4px 12px;
+        color: rgba(0, 0, 0, 0.7);
+        border: 1px solid rgba(0, 0, 0, 0.12);
+        background: white;
+        margin-bottom: 15px;
+        margin-right: 20px;
+        width: 300px;
+    }
 
-#barra-busqueda {
-    grid-area: barra-busqueda;
-    padding: 4px 12px;
-    color: rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    background: white;
-    margin-bottom: 15px;
-    margin-right: 20px;
-    width: 300px;
-}
+    #clientes-tabla {
+        width: 100%;
+    }
 
-#clientes-tabla {
-    grid-area: clientes-tabla;
-    width: 100%;
-}
+    th {
+        text-align: left;
+        padding-top: 7px;
+        padding-bottom: 7px;
+        padding-right: 5px;
+    }
 
-th {
-    text-align: left;
-    padding-top: 7px;
-    padding-bottom: 7px;
-    padding-right: 5px;
-}
+    td {
+        text-align: left;
+        font-size: 14px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
 
-td {
-    text-align: left;
-    font-size: 14px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
+    .btnEditar {
+        background: lightgreen;
+    }
 
-.btnAcciones {
-    padding: 7px;
-    font-weight: bold;
-    color: white;
-}
-
-.btnCrear {
-    background: lightblue;
-}
-
-.btnEditar {
-    background: lightgreen;
-}
-
-.btnEliminar {
-    background: lightcoral;
-}
+    .btnEliminar {
+        background: lightcoral;
+    }
 </style>

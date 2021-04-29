@@ -1,5 +1,12 @@
 <template>
     <div class="component-div">
+        <!--https://stackoverflow.com/questions/61934264/how-to-disable-modal-ok-slot-of-b-modal-in-vue-bootstrap-->
+        <b-modal v-model="isModalVisible" title="Añadir orden" hide-footer>
+             <CrearOrden
+                v-bind:orden="seleccion"
+                @close="closeModal"
+            />
+        </b-modal>
         <h2 class="header-text">Ordenes</h2>
         <div id="ordenes-header">
             <input
@@ -7,47 +14,29 @@
                 id="barra-busqueda"
                 placeholder="Ingrese orden a buscar"
             />
-            <button @click="showModal" class="btnAcciones btnCrear">
-                Crear orden
-            </button>
+            <b-button 
+                @click="showModal" 
+                variant="primary" 
+                size="sm"
+            >Añadir orden</b-button>
         </div>
-        <CrearOrden 
-          v-bind:orden="seleccion"
-          v-show="isModalVisible" 
-          @close="closeModal" />
-        <table id="ordenes-tabla">
-            <thead>
-                <tr>
-                    <th>Fecha de Creación</th>
-                    <th>Cliente</th>
-                    <th>Asunto</th>
-                    <th>Descripción</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="orden in filtrarOrdenes" :key="orden.ID">
-                    <td>{{ orden.FechaCreacion }}</td>
-                    <td>{{ orden.ClienteID }}</td>
-                    <td>{{ orden.Asunto }}</td>
-                    <td>{{ orden.Descripcion }}</td>
-                    <td colspan="2">
-                        <button
-                            v-on:click="editarOrden(orden.ID)"
-                            class="btnAcciones btnEditar"
-                        >
-                            Editar
-                        </button>
-                        <button
-                            v-on:click="eliminarOrden(orden.ID)"
-                            class="btnAcciones btnEliminar"
-                        >
-                            Eliminar
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <b-pagination
+            v-model="currentPage"
+            :total-rows="rows"
+            :per-page="perPage"
+            aria-controls="ordenes-tabla"
+        ></b-pagination>
+        <b-table
+            id="ordenes-tabla"
+            :items="filtrarOrdenes"
+            :per-page="perPage"
+            :current-page="currentPage"
+            :fields="columnas"
+            striped
+            hover
+            small
+        >
+        </b-table>
     </div>
 </template>
 
@@ -59,7 +48,10 @@ export default {
     name: "Ordenes",
     data() {
         return {
+            currentPage: 1,
+            perPage: 10,
             info: {},
+            columnas: ["FechaCreacion", "ClienteID", "Asunto", "Descripcion"],
             search: "",
             seleccion: "",
             isModalVisible: false,
@@ -83,6 +75,9 @@ export default {
 
             return ordenesFiltradas;
         },
+        rows() {
+            return this.info.length;
+        },
     },
     methods: {
         showModal() {
@@ -98,8 +93,8 @@ export default {
                 .catch((error) => console.log(error.response.data));
         },
         editarOrden: function (ID) {
-            this.seleccion      = ID.toString()
-            this.isModalVisible = true
+            this.seleccion = ID.toString();
+            this.isModalVisible = true;
         },
         eliminarOrden: function (ID) {
             var r = confirm("¿Estás seguro de eliminar este registro?");
@@ -120,23 +115,12 @@ export default {
 </script>
 
 <style scoped>
-.componentView {
-    display: grid;
-    grid-template-rows: 60px 60px auto;
-    grid-template-areas:
-        "header-text"
-        "barra-busqueda"
-        "ordenes-tabla";
-}
-
 .header-text {
-    grid-area: header-text;
     margin-top: 15px;
     margin-bottom: 15px;
 }
 
 #barra-busqueda {
-    grid-area: barra-busqueda;
     padding: 4px 12px;
     color: rgba(0, 0, 0, 0.7);
     border: 1px solid rgba(0, 0, 0, 0.12);
@@ -146,39 +130,6 @@ export default {
 }
 
 #ordenes-tabla {
-    grid-area: clientes-tabla;
     width: 100%;
-}
-
-th {
-    text-align: left;
-    padding-top: 7px;
-    padding-bottom: 7px;
-    padding-right: 5px;
-}
-
-td {
-    text-align: left;
-    font-size: 14px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-}
-
-.btnAcciones {
-    padding: 7px;
-    font-weight: bold;
-    color: white;
-}
-
-.btnCrear {
-    background: lightblue;
-}
-
-.btnEditar {
-    background: lightgreen;
-}
-
-.btnEliminar {
-    background: lightcoral;
 }
 </style>
