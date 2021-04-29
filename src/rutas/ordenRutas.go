@@ -19,6 +19,9 @@ func InicializarRutasOrdenes(router *gin.Engine) *gin.Engine {
 	router.POST("/ordenes", gormDB.CrearOrden)
 	router.DELETE("/ordenes/:ID", gormDB.EliminarOrden)
 
+	router.GET("/ordenes/:ID/comentarios", gormDB.ObtenerOrdenComentarios)
+	router.POST("/ordenes/:ID/comentarios", gormDB.CrearOrdenComentario)
+
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H {"code": "PAGE_NOT_FOUND", "message": "Page not found"})
 	})

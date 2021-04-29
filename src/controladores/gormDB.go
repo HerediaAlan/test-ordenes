@@ -23,6 +23,7 @@ func BuildGormDB() *gorm.DB {
 	db.AutoMigrate(&modelos.OrdenComentario{})
 	var cliente modelos.Cliente
 
+	// Usar libraría GoFakeIt para crear datos de prueba
 	gofakeit.Seed(0)
 	if err := db.First(&cliente).Error; err != nil {
 		for i := 1; i < 10; i++ {

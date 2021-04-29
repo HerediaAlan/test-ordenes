@@ -3,7 +3,7 @@ Proyecto integrador de una API con backend en Go, y vistas usando Vue.js, y Vue-
 
 ## Rutas disponibles
 ### Clientes
-* _GET _/clientes_
+* GET _/clientes_
 * POST _/clientes_
 * PUT _/clientes/:id_
 * DELETE _/clientes/:id_
@@ -12,3 +12,5 @@ Proyecto integrador de una API con backend en Go, y vistas usando Vue.js, y Vue-
 * GET _/ordenes_
 * POST _/ordenes_
 * DELETE _/ordenes/:id_
+* GET _/ordenes/:id/comentarios_
+* POST _/ordenes/:id/comentarios_
