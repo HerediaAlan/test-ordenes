@@ -2,7 +2,7 @@
 Proyecto integrador de una API con backend en Go, y vistas usando Vue.js, y Vue-Router
 
 ## Diagrama Entidad-Relación
-![alt text](https://github.com/AlanHerediaG/test-ordenes/docs/diagrama-basico-er.png "Diagrama")
+![alt text](https://github.com/AlanHerediaG/test-ordenes/raw/main/docs/diagrama-basico-er.png "Diagrama")
 
 ## Rutas disponibles
 ### Clientes
