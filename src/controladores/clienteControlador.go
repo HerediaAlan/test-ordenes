@@ -19,7 +19,7 @@ func (gormDB *GormDB) ObtenerClientes(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H {"status": http.StatusOK, "data": clientes})
 }
 
-func (gormDB *GormDB) ObtenerClientesSegunID(c *gin.Context) {
+func (gormDB *GormDB) ObtenerClienteSegunID(c *gin.Context) {
 	clientes := []modelos.Cliente{}
 	id := c.Param("ID")
 

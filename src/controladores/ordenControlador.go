@@ -20,6 +20,17 @@ func (gormDB *GormDB) ObtenerOrdenes(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H {"status": http.StatusOK, "data": ordenes})
 }
 
+func (gormDB *GormDB) ObtenerOrdenSegunID(c *gin.Context) {
+	orden := modelos.Orden{}
+	id := c.Param("ID")
+
+	if err := gormDB.DB.First(&orden, id).Error; err != nil {
+		c.AbortWithStatus(http.StatusNotFound)
+	}
+
+	c.JSON(http.StatusOK, gin.H {"status": http.StatusOK, "data": orden})
+}
+
 func (gormDB *GormDB) CrearOrden(c *gin.Context) {
 	var (
 		orden  modelos.Orden
@@ -27,8 +38,8 @@ func (gormDB *GormDB) CrearOrden(c *gin.Context) {
 	)
 
 	// https://www.pauladamsmith.com/blog/2011/05/go_time.html
-	layout := "2006-01-02 15:04"
-	t, err := time.Parse(layout, c.PostForm("fecha_creacion"))
+	// https://apuntes.de/golang/time-parseo-de-fechas/#gsc.tab=0
+	t, err := time.Parse(time.RFC1123, c.PostForm("fecha_creacion"))
 	if err != nil {
 		result = gin.H {
 			"status": 400,
@@ -150,8 +161,7 @@ func (gormDB *GormDB) CrearOrdenComentario(c *gin.Context) {
 			"result": "No se encontró la orden",
 		}
 	} else {
-		layout := "2006-01-02 15:04"
-		t, err := time.Parse(layout, c.PostForm("fecha_creacion"))
+		t, err := time.Parse(time.RFC1123, c.PostForm("fecha_creacion"))
 		if err != nil {
 			result = gin.H {
 				"status": 400,

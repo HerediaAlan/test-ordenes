@@ -86,7 +86,6 @@ export default {
     },
     methods: {
         obtenerDatos() {
-            console.log(this.idCliente)
             axios
                 .get('http://localhost:10040/clientes/' + this.idCliente)
                 .then(response => {
@@ -108,6 +107,9 @@ export default {
                     document.getElementById("email").value = respuesta.email
                     this.email = respuesta.email
                     })
+                .catch(function (response) {
+                    console.log("error", response)
+                })
         },
         onSubmit() {
             // https://stackoverflow.com/questions/49162345/prevent-form-from-submitting-with-vue-js-and-axios
@@ -120,7 +122,7 @@ export default {
                         headers: {'Content-Type': 'multipart/form-data'}
                 }
                 })
-                .then(this.Close())
+                .then(this.close())
                 .catch(function(response) { console.log('error', response); });
             } else {
                 axios({
@@ -131,7 +133,7 @@ export default {
                         headers: {'Content-Type': 'multipart/form-data'}
                 }
                 })
-                .then(this.Close())
+                .then(this.close())
                 .catch(function(response) { console.log('error', response); })
             }
         },

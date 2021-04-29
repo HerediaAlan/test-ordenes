@@ -16,6 +16,7 @@ func InicializarRutasOrdenes(router *gin.Engine) *gin.Engine {
 	router.Use(cors.Default())
 
 	router.GET("/ordenes", gormDB.ObtenerOrdenes)
+	router.GET("/ordenes/:ID", gormDB.ObtenerOrdenSegunID)
 	router.POST("/ordenes", gormDB.CrearOrden)
 	router.DELETE("/ordenes/:ID", gormDB.EliminarOrden)
 

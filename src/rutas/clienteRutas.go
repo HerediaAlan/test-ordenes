@@ -16,7 +16,7 @@ func InicializarRutasClientes(router *gin.Engine) *gin.Engine {
 	router.Use(cors.Default())
 
 	router.GET("/clientes", gormDB.ObtenerClientes)
-	router.GET("/clientes/:ID", gormDB.ObtenerClientesSegunID)
+	router.GET("/clientes/:ID", gormDB.ObtenerClienteSegunID)
 	router.POST("/clientes", gormDB.CrearCliente)
 	router.PUT("/clientes/:ID", gormDB.ActualizarCliente)
 	router.DELETE("/clientes/:ID", gormDB.EliminarCliente)
