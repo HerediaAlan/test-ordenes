@@ -2,7 +2,10 @@
     <div class="component-div">
         <h2 class="header-text">Clientes</h2>
         <div id="clientes-header">
-            <input v-model="search" id="barra-busqueda" placeholder="Ingrese el nombre a buscar">
+            <input 
+                v-model="search" 
+                id="barra-busqueda" 
+                placeholder="Ingrese el nombre a buscar">
             <button @click="showModal" class="btnAcciones btnCrear">Crear cliente</button>
         </div>
         <CrearCliente 

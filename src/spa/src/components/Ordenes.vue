@@ -23,7 +23,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="orden in info.data.data" :key="orden.ID">
+        <tr v-for="orden in filtrarOrdenes" :key="orden.ID">
           <td>{{ orden.FechaCreacion }}</td>
           <td>{{ orden.ClienteID }}</td>
           <td>{{ orden.Asunto }}</td>
@@ -49,14 +49,15 @@
 </template>
 
 <script>
-import CrearOrden from "./ordenes/CrearOrden";
-const axios = require("axios");
+import CrearOrden from "./ordenes/CrearOrden"
+const axios = require("axios")
 
 export default {
   name: "Ordenes",
   data() {
     return {
       info: {},
+      search: "",
       isModalVisible: false,
     };
   },
@@ -64,7 +65,20 @@ export default {
     CrearOrden,
   },
   mounted() {
-    this.obtenerOrdenes();
+    this.obtenerOrdenes()
+  },
+  computed: {
+    filtrarOrdenes() {
+      // Basado en https://stackoverflow.com/questions/62711939/filtering-table-on-the-frontend-vue-js
+      let ordenesFiltradas = this.info
+      if (this.search.length != 0) {
+        ordenesFiltradas = ordenesFiltradas.filter(orden => {
+          return orden.FechaCreacion.search(this.search) != -1
+        })
+      }
+
+      return ordenesFiltradas
+    }
   },
   methods: {
     showModal() {
@@ -76,27 +90,27 @@ export default {
     obtenerOrdenes() {
       axios
         .get("http://localhost:10040/ordenes")
-        .then((response) => (this.info = response))
-        .catch((error) => console.log(error.response.data))
+        .then(response => this.info = response.data.data)
+        .catch(error => console.log(error.response.data))
     },
     editarOrden() {
       alert("Editar")
     },
     eliminarOrden: function (ID) {
-      var r = confirm("¿Estás seguro de eliminar este registro?");
+      var r = confirm("¿Estás seguro de eliminar este registro?")
       if (r == true) {
         axios
           .delete("http://localhost:10040/ordenes/" + ID)
           .then(() => {
             // Borrar la orden localmente para refrescar
             // https://stackoverflow.com/questions/53142220/auto-reload-list-items-after-deletion-vue-js
-            const orden = this.info.data.data.findIndex((p) => p.id === ID)
-            this.info.data.data.splice(orden, 1)
+            const orden = this.info.findIndex((p) => p.id === ID);
+            this.info.splice(orden, 1)
           })
-          .catch((error) => console.log(error.response.data))
+          .catch(error => console.log(error.response.data))
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
