@@ -53,10 +53,9 @@ func (gormDB *GormDB) CrearCliente(c *gin.Context) {
 }
 
 func (gormDB *GormDB) ActualizarCliente(c *gin.Context) {
-	id := c.Query("id")
+	id := c.Query("ID")
 	var (
 		cliente      modelos.Cliente
-		nuevoCliente modelos.Cliente
 		result       gin.H
 	)
 
@@ -68,21 +67,23 @@ func (gormDB *GormDB) ActualizarCliente(c *gin.Context) {
 		}
 	}
 
-	nuevoCliente.Nombre            = c.PostForm("nombre")
-	nuevoCliente.PrimerApellido    = c.PostForm("primer_apellido")
-	nuevoCliente.SegundoApellido   = c.PostForm("segundo_apellido")
-	nuevoCliente.Domicilio         = c.PostForm("domicilio")
-	nuevoCliente.Ciudad            = c.PostForm("ciudad")
-	nuevoCliente.EntidadFederativa = c.PostForm("entidad_federativa")
-	nuevoCliente.Telefono          = c.PostForm("telefono")
-	nuevoCliente.Email             = c.PostForm("email")
+	cliente.Nombre            = c.PostForm("nombre")
+	cliente.PrimerApellido    = c.PostForm("primer_apellido")
+	cliente.SegundoApellido   = c.PostForm("segundo_apellido")
+	cliente.Domicilio         = c.PostForm("domicilio")
+	cliente.Ciudad            = c.PostForm("ciudad")
+	cliente.EntidadFederativa = c.PostForm("entidad_federativa")
+	cliente.Telefono          = c.PostForm("telefono")
+	cliente.Email             = c.PostForm("email")
 
-	err = gormDB.DB.Model(&cliente).Updates(nuevoCliente).Error
+	err = gormDB.DB.Save(&cliente).Error
 	if err != nil {
 		result = gin.H {
 			"status": 400,
-			"result": "No se pudo actualizar el cliente",
+			"result": "Error al guardar los cambios",
 		}
+		c.JSON(400, result)
+		return
 	} else {
 		result = gin.H {
 			"status": 200,

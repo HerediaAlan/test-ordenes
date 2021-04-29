@@ -18,6 +18,7 @@ func InicializarRutasOrdenes(router *gin.Engine) *gin.Engine {
 	router.GET("/ordenes", gormDB.ObtenerOrdenes)
 	router.GET("/ordenes/:ID", gormDB.ObtenerOrdenSegunID)
 	router.POST("/ordenes", gormDB.CrearOrden)
+	router.PUT("/ordenes/:ID", gormDB.ActualizarOrden)
 	router.DELETE("/ordenes/:ID", gormDB.EliminarOrden)
 
 	router.GET("/ordenes/:ID/comentarios", gormDB.ObtenerOrdenComentarios)

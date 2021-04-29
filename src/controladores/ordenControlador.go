@@ -70,15 +70,23 @@ func (gormDB *GormDB) CrearOrden(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, result)
 }
-/*
-func (gormDB *GormDB) CrearComentarioOrden(c *gin.Context) {
+
+func (gormDB *GormDB) ActualizarOrden(c *gin.Context) {
+	id := c.Query("ID")
 	var (
-		comentario modelos.OrdenComentario
-		result gin.H
+		orden      modelos.Orden
+		result     gin.H
 	)
 
-	layout := "2006-01-02 15:04"
-	t, err := time.Parse(layout, c.PostForm("fecha_creacion"))
+	err := gormDB.DB.First(&orden, id).Error
+	if err != nil {
+		result = gin.H {
+			"status": 400,
+			"result": "Orden especificada no encontrada",
+		}
+	}
+
+	t, err := time.Parse(time.RFC1123, c.PostForm("fecha_creacion"))
 	if err != nil {
 		result = gin.H {
 			"status": 400,
@@ -87,8 +95,38 @@ func (gormDB *GormDB) CrearComentarioOrden(c *gin.Context) {
 		c.JSON(400, result)
 		return
 	}
+	idCl, errId := strconv.Atoi(c.PostForm("clienteID"))
+	if errId != nil {
+		result = gin.H {
+			"status": 400,
+			"result": "Error al convertir ID de cliente",
+		}
+		c.JSON(400, result)
+		return
+	}
+
+	orden.FechaCreacion  = t
+	orden.ClienteID      = idCl
+	orden.Asunto         = c.PostForm("asunto")
+	orden.Descripcion    = c.PostForm("descripcion")
+
+	err = gormDB.DB.Save(&orden).Error
+	if err != nil {
+		result = gin.H {
+			"status": 400,
+			"result": "No se pudo actualizar la orden",
+		}
+	} else {
+		result = gin.H {
+			"status": 200,
+			"result": "Datos actualizados correctamente",
+		}
+	}
+
+	c.JSON(http.StatusOK, result)
 }
-*/
+
+
 func (gormDB *GormDB) EliminarOrden(c *gin.Context) {
 	var (
 		orden  modelos.Orden

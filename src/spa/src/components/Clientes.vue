@@ -13,11 +13,12 @@
                 size="sm"
             >Añadir cliente</b-button>
         </div>
-        <CrearCliente
-            v-bind:cliente="seleccion"
-            v-show="isModalVisible"
-            @close="closeModal"
-        />
+        <b-modal v-model="isModalVisible" title="Añadir cliente" hide-footer>
+            <CrearCliente
+                v-bind:cliente="seleccion"
+                @close="closeModal"
+            />
+        </b-modal>
         <b-pagination
             v-model="currentPage"
             :total-rows="rows"
@@ -30,23 +31,25 @@
             :per-page="perPage"
             :current-page="currentPage"
             :fields="columnas"
-            striped hover small
+            striped hover small selectable
+            @row-selected="onRowSelected"
         >
+            <!--https://bootstrap-vue.org/docs/components/table#row-select-support-->
+            <template #cell(acciones)="row">
+                <b-button size="sm" @click="row.toggleDetails" class="mr-2">
+                    {{ row.detailsShowing ? 'Cerrar' : 'Ver'}} Detalles
+                </b-button>
+            </template>
+
+            <template #row-details="">
+                <b-card>
+                    <b-row class="mb-2">
+                        <b-button @click="editarCliente" variant="info">Editar</b-button>
+                        <b-button @click="eliminarCliente" variant="danger">Eliminar</b-button>
+                    </b-row>
+                </b-card>
+            </template>
         </b-table>
-         <!-- 
-             <button
-                            v-on:click="editarCliente(cliente.ID)"
-                            class="btnAcciones btnEditar"
-                        >
-                            Editar
-                        </button>
-                        <button
-                            v-on:click="eliminarCliente(cliente.ID)"
-                            class="btnAcciones btnEliminar"
-                        >
-                            Eliminar
-                        </button>
-         -->
     </div>
 </template>
 
@@ -65,7 +68,7 @@ export default {
             currentPage: 1,
             perPage: 10,
             info: {},
-            columnas: ["nombre", "primerApellido", "segundoApellido", "domicilio", "ciudad", "entidadFederativa", "telefono", "email"],
+            columnas: ["nombre", "primerApellido", "segundoApellido", "domicilio", "ciudad", "entidadFederativa", "telefono", "email", "acciones"],
             search: "",
             seleccion: "",
             isModalVisible: false,
@@ -89,11 +92,17 @@ export default {
 
             return clientesFiltrados;
         },
+        idSeleccion: function() {
+            return this.seleccion.toString()
+        },
         rows() {
             return this.info.length
         }
     },
     methods: {
+        onRowSelected(items) {
+            this.seleccion = items[0].ID
+        },
         showModal() {
             this.isModalVisible = true;
         },
@@ -106,25 +115,37 @@ export default {
                 .then((response) => (this.info = response.data.data))
                 .catch((error) => console.log(error.response.data));
         },
-        editarCliente: function (ID) {
-            this.seleccion      = ID.toString();
+        editarCliente: function () {
+            this.seleccion = this.seleccion.toString()
             this.isModalVisible = true;
         },
-        eliminarCliente: function (ID) {
-            var r = confirm("¿Estás seguro de eliminar este registro?");
-            if (r == true) {
-                axios
-                    .delete("http://localhost:10040/clientes/" + ID)
-                    .then(() => {
-                        // Borrar el cliente localmente para refrescar
-                        // https://stackoverflow.com/questions/53142220/auto-reload-list-items-after-deletion-vue-js
-                        const cliente = this.info.data.data.findIndex(
-                            (p) => p.id === ID
-                        );
-                        this.info.data.data.splice(cliente, 1);
-                    })
-                    .catch((error) => console.log(error.response.data));
-            }
+        eliminarCliente: function () {
+            this.boxTwo = ''
+            this.$bvModal.msgBoxConfirm("¿Deseas eliminar a este cliente?", {
+                title: "Confirmar eliminar dato",
+                size: "sm",
+                buttonSize: "sm",
+                okVariant: "danger",
+                okTitle: "Si",
+                cancelTitle: "No",
+                footerClass: "p-2",
+                centered: true
+            })
+            .then(value => {
+                if (value){
+                    axios
+                        .delete("http://localhost:10040/clientes/" + this.idSeleccion)
+                        .then(() => {
+                            // Borrar el cliente localmente para refrescar
+                            // https://stackoverflow.com/questions/53142220/auto-reload-list-items-after-deletion-vue-js
+                            const cliente = this.info.findIndex(
+                                (p) => p.id === this.idSeleccion
+                            );
+                            this.info.splice(cliente, 1);
+                        })
+                        .catch((error) => console.log(error.response.data));
+                }
+            })
         },
     },
 };

@@ -3,8 +3,7 @@
         <b-form-group
             id="clienteGroup"
             label="ID del cliente"
-            label-for="clienteInput"
-        >
+            label-for="clienteInput">
             <b-form-input
                 id="clienteInput"
                 v-model="form.clienteID"
@@ -12,7 +11,10 @@
             ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="asuntoGroup" label="Asunto" label-for="asuntoInput">
+        <b-form-group 
+            id="asuntoGroup" 
+            label="Asunto" 
+            label-for="asuntoInput">
             <b-form-input
                 id="asuntoInput"
                 v-model="form.asunto"
@@ -27,7 +29,7 @@
         >
             <b-form-input
                 id="descripcionInput"
-                v-model="form.descripcion_seguimiento"
+                v-model="form.descripcion"
                 placeholder="Ej: Se realizó una orden por medio de FB"
             ></b-form-input>
         </b-form-group>
@@ -67,7 +69,7 @@ export default {
                 fecha_creacion: "",
                 clienteID: "",
                 asunto: "",
-                descripcion_seguimiento: "",
+                descripcion: "",
                 comentario: "",
             },
         };
@@ -82,7 +84,7 @@ export default {
             return this.orden.toString();
         },
     },
-    beforeUpdate() {
+    beforeMount() {
         this.obtenerDatos();
     },
     methods: {
@@ -91,17 +93,10 @@ export default {
                 .get("http://localhost:10040/ordenes/" + this.idOrden)
                 .then((response) => {
                     const respuesta = response.data.data;
-                    document.getElementById("fechaCreacion").value =
-                        respuesta.FechaCreacion;
-                    this.fechaCreacion = respuesta.FechaCreacion;
-                    document.getElementById("clienteID").value =
-                        respuesta.ClienteID;
-                    this.clienteID = respuesta.ClienteID;
-                    document.getElementById("asunto").value = respuesta.Asunto;
-                    this.asunto = respuesta.Asunto;
-                    document.getElementById("descripcion").value =
-                        respuesta.Descripcion;
-                    this.descripcion = respuesta.Descripcion;
+                    this.form.fechaCreacion = respuesta.FechaCreacion;
+                    this.form.clienteID = respuesta.ClienteID;
+                    this.form.asunto = respuesta.Asunto;
+                    this.form.descripcion = respuesta.Descripcion;
                 })
                 .catch(function (response) {
                     console.log("error", response);
@@ -109,21 +104,21 @@ export default {
         },
         onSubmit() {
             // https://stackoverflow.com/questions/49162345/prevent-form-from-submitting-with-vue-js-and-axios
+            var formDataOrden = new FormData();
             var d = new Date()
             if (this.orden === "") {
-                var formDataOrden = new FormData();
                 formDataOrden.append(
                     "fecha_creacion",
-                    `${d.toLocaleString("default", { weekday: "short" })}, ${d.getDate()} ${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()} ${('0' + d.getHours()).slice(-2)}:${d.getMinutes()}:${d.getSeconds()} MST`
-                );
+                    `${d.toLocaleString("default", { weekday: "short" })}, ${d.getDate()} ${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()} ${('0' + d.getHours()).slice(-2)}:${d.getMinutes()}:${('0' + d.getSeconds()).slice(-2)} MST`
+                )
                 formDataOrden.append(
                     "clienteID",
                     this.form.clienteID
-                );
+                )
                 formDataOrden.append(
                     "asunto",
                     this.form.asunto
-                );
+                )
                 formDataOrden.append(
                     "descripcion",
                     this.form.descripcion
@@ -141,7 +136,7 @@ export default {
                         var d = new Date();
                         formDataComentario.append(
                             "fecha_creacion",
-                            `${d.toLocaleString("default", { weekday: "short" })}, ${d.getDate()} ${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()} ${('0' + d.getHours()).slice(-2)}:${d.getMinutes()}:${d.getSeconds()} MST`
+                            `${d.toLocaleString("default", { weekday: "short" })}, ${d.getDate()} ${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()} ${('0' + d.getHours()).slice(-2)}:${d.getMinutes()}:${('0' + d.getSeconds()).slice(-2)} MST`
                         )
                         formDataComentario.append(
                             "ordenID",
@@ -167,10 +162,26 @@ export default {
                         console.log("error", response);
                     });
             } else {
+                formDataOrden.append(
+                    "fecha_creacion",
+                    `${d.toLocaleString("default", { weekday: "short" })}, ${d.getDate()} ${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()} ${('0' + d.getHours()).slice(-2)}:${d.getMinutes()}:${('0' + d.getSeconds()).slice(-2)} MST`
+                )
+                formDataOrden.append(
+                    "clienteID",
+                    this.form.clienteID
+                )
+                formDataOrden.append(
+                    "asunto",
+                    this.form.asunto
+                )
+                formDataOrden.append(
+                    "descripcion",
+                    this.form.descripcion
+                )
                 axios({
                     method: "put",
                     url: "http://localhost:10040/ordenes/" + this.idOrden,
-                    data: new FormData(document.getElementById("form-orden")),
+                    data: formDataOrden,
                     config: {
                         headers: { "Content-Type": "multipart/form-data" },
                     },
