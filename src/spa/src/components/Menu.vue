@@ -5,7 +5,7 @@
             <b-button-group vertical>
                 <b-button to="/" variant="primary-outline" class="d-flex align-items-center">
                     <b-icon icon="house-door"></b-icon>
-                    <router-link :to="{ name:'Home' }">Inicio</router-link>
+                    <router-link :to="{ name:'Home' }" exact>Inicio</router-link>
                 </b-button>
                 <b-button to="/clientes" variant="primary-outline" class="d-flex align-items-center">
                     <b-icon icon="person-fill"></b-icon>
@@ -26,7 +26,8 @@ export default {
     name: "Menu",
     data() {
         return {
-            appTitle: "EasyChef",
+            appTitle: "API Ordenes",
+            myToggle: false,
             items: [
                 { title: "Menu", url: "/menu" },
                 { title: "Clientes", url: "/clientes" },

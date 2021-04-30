@@ -7,6 +7,7 @@ Proyecto integrador de una API con backend en Go, y vistas usando Vue.js, y Vue-
 * Bootstrap-Vue (framework de soporte para frontend)
 * Gin (framework de backend para APIs)
 * Gorm (ORM de GO)
+* Axios.js (Cliente HTTP)
 * GoFakeIt (creador de datos falsos para propósitos de _testing_)
 
 ## Diagrama Entidad-Relación
