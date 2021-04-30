@@ -34,6 +34,19 @@
                     placeholder="Ej: Se realizó una orden por medio de FB"
                 ></b-form-input>
             </b-form-group>
+
+            <b-form-group
+                v-if="this.orden == ''"
+                id="descripcionSeguimientoGroup"
+                label="Descripcion de Seguimiento"
+                label-for="descripcionSeguimientoInput"
+            >
+                <b-form-input
+                    id="descripcionSeguimientoInput"
+                    v-model="form.descripcion_seguimiento"
+                    placeholder="Ej: Verificar compra"
+                ></b-form-input>
+            </b-form-group>
         </div>
 
         <div class="buttons">
@@ -57,10 +70,10 @@ export default {
     data() {
         return {
             form: {
-                fecha_creacion: "",
                 clienteID: "",
                 asunto: "",
-                descripcion: ""
+                descripcion: "",
+                descripcion_seguimiento: ""
             },
         };
     },
@@ -108,6 +121,7 @@ export default {
             var formDataOrden = new FormData();
             var d = new Date();
             if (this.orden === "") {
+                alert("POST")
                 formDataOrden.append(
                     "fecha_creacion",
                     `${d.toLocaleString("default", {weekday: "short",})}, ${d.getDate()} ${d.toLocaleString("default", {month: "short",})} ${d.getFullYear()} ${("0" + d.getHours()).slice(-2)}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(-2)} MST`
@@ -157,10 +171,6 @@ export default {
                         console.log("error", response);
                     });
             } else {
-                formDataOrden.append(
-                    "fecha_creacion",
-                    `${d.toLocaleString("default", {weekday: "short",})}, ${d.getDate()} ${d.toLocaleString("default", {month: "short",})} ${d.getFullYear()} ${("0" + d.getHours()).slice(-2)}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(-2)} MST`
-                );
                 formDataOrden.append("clienteID", this.form.clienteID);
                 formDataOrden.append("asunto", this.form.asunto);
                 formDataOrden.append("descripcion", this.form.descripcion);

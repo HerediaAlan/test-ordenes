@@ -33,10 +33,7 @@
             @row-clicked="onRowClicked"
             striped hover small selectable>
 
-            <template #cell(show_details)="row">
-                <b-button size="sm" @click="row.toggleDetails" class="mr-2">
-                {{ row.detailsShowing ? 'Hide' : 'Show'}} Details
-                </b-button>
+            <template #cell(show_details)="">
             </template>
 
             <template #row-details="row">
@@ -111,6 +108,9 @@ export default {
         closeModal() {
             this.isModalVisible = false;
         },
+        closeComentarioModal() {
+            this.isComentarioModalVisible = false;
+        },
         crearOrden() {
             this.seleccion = "",
             this.showModal()
@@ -122,7 +122,7 @@ export default {
                     const data = response.data.data
                     // https://stackoverflow.com/questions/38922998/add-property-to-an-array-of-objects
                     data.forEach(element => {
-                        element._showDetails = "false"
+                        element._showDetails = false
                     });
                     this.info = data
                 })
@@ -156,10 +156,10 @@ export default {
                         .then(() => {
                             // Borrar el cliente localmente para refrescar
                             // https://stackoverflow.com/questions/53142220/auto-reload-list-items-after-deletion-vue-js
-                            const orden = this.info.findIndex(
+                            const ordenIndex = this.info.findIndex(
                                 (p) => p.id === this.idSeleccion
                             );
-                            this.info.splice(orden, 1);
+                            this.info.splice(ordenIndex, 1);
                         })
                         .catch((error) => console.log(error.response.data));
                 }

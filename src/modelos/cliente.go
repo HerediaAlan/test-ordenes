@@ -18,13 +18,3 @@ type Cliente struct {
 func (c *Cliente) TableName() string {
 	return "cliente"
 }
-
-// func crearCliente(id int, nombre string, primerApellido string,
-// 	segundoApellido string, domicilio string, ciudad string,
-// 	entidadFederativa string, telefono string, email string) {
-// 	db, err := sql.Open("mysql", "root:@/ordenes")
-
-// 	if err != nil {
-// 		panic(err.Error())
-// 	}
-// }

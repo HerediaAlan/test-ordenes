@@ -32,20 +32,17 @@
             :current-page="currentPage"
             :fields="columnas"
             striped hover small selectable
-            @row-selected="onRowSelected"
+            @row-clicked="onRowClicked"
         >
             <!--https://bootstrap-vue.org/docs/components/table#row-select-support-->
-            <template #cell(acciones)="row">
-                <b-button size="sm" @click="row.toggleDetails" class="mr-2">
-                    {{ row.detailsShowing ? 'Cerrar' : 'Ver'}} Detalles
-                </b-button>
+            <template #cell(show_details)="">
             </template>
 
-            <template #row-details="">
-                <b-card>
+            <template #row-details="row">
+                <b-card class="mb-2">
                     <b-row class="mb-2">
-                        <b-button @click="editarCliente" variant="info">Editar</b-button>
-                        <b-button @click="eliminarCliente" variant="danger">Eliminar</b-button>
+                        <b-button @click="editarCliente(row)" variant="info">Editar</b-button>
+                        <b-button @click="eliminarCliente(row)" variant="danger">Eliminar</b-button>
                     </b-row>
                 </b-card>
             </template>
@@ -67,7 +64,7 @@ export default {
             currentPage: 1,
             perPage: 10,
             info: {},
-            columnas: ["nombre", "primerApellido", "segundoApellido", "domicilio", "ciudad", "entidadFederativa", "telefono", "email", "acciones"],
+            columnas: ["nombre", "primerApellido", "segundoApellido", "domicilio", "ciudad", "entidadFederativa", "telefono", "email"],
             search: "",
             seleccion: "",
             isModalVisible: false,
@@ -99,8 +96,8 @@ export default {
         }
     },
     methods: {
-        onRowSelected(items) {
-            this.seleccion = items[0].ID
+        onRowClicked(item) {
+            item._showDetails = !item._showDetails
         },
         showModal() {
             this.isModalVisible = true;
@@ -114,11 +111,12 @@ export default {
                 .then((response) => (this.info = response.data.data))
                 .catch((error) => console.log(error.response.data));
         },
-        editarCliente: function () {
-            this.seleccion = this.seleccion.toString()
+        editarCliente: function (item) {
+            this.seleccion = item.item.ID
             this.isModalVisible = true;
         },
-        eliminarCliente: function () {
+        eliminarCliente: function (item) {
+            this.seleccion = item.item.ID
             this.boxTwo = ''
             this.$bvModal.msgBoxConfirm("¿Deseas eliminar a este cliente?", {
                 title: "Confirmar eliminar dato",
@@ -137,10 +135,10 @@ export default {
                         .then(() => {
                             // Borrar el cliente localmente para refrescar
                             // https://stackoverflow.com/questions/53142220/auto-reload-list-items-after-deletion-vue-js
-                            const cliente = this.info.findIndex(
+                            const clienteIndex = this.info.findIndex(
                                 (p) => p.id === this.idSeleccion
                             );
-                            this.info.splice(cliente, 1);
+                            this.info.splice(clienteIndex, 1);
                         })
                         .catch((error) => console.log(error.response.data));
                 }

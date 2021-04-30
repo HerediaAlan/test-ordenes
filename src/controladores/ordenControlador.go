@@ -25,7 +25,7 @@ func (gormDB *GormDB) ObtenerOrdenSegunID(c *gin.Context) {
 	orden := modelos.Orden{}
 	id := c.Param("ID")
 
-	if err := gormDB.DB.First(&orden, id).Error; err != nil {
+	if err := gormDB.DB.Preload("OrdenComentarios").First(&orden, id).Error; err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	}
 
@@ -79,24 +79,15 @@ func (gormDB *GormDB) ActualizarOrden(c *gin.Context) {
 		result     gin.H
 	)
 
-	err := gormDB.DB.Where("id = ?", id).First(&orden).Error
+	err := gormDB.DB.First(&orden, id).Error
 	if err != nil {
 		result = gin.H {
 			"status": 400,
 			"result": "Orden especificada no encontrada",
 		}
 	}
-
-	_, errF := time.Parse(time.RFC1123, c.PostForm("fecha_creacion"))
-	if errF != nil {
-		result = gin.H {
-			"status": 400,
-			"result": "Error al convertir fecha",
-		}
-		c.JSON(400, result)
-		return
-	}
-	_, errId := strconv.Atoi(c.PostForm("clienteID"))
+	
+	cId, errId := strconv.Atoi(c.PostForm("clienteID"))
 	if errId != nil {
 		result = gin.H {
 			"status": 400,
@@ -105,14 +96,19 @@ func (gormDB *GormDB) ActualizarOrden(c *gin.Context) {
 		c.JSON(400, result)
 		return
 	}
-	c.BindJSON(&orden)
 
-	err = gormDB.DB.Save(&orden).Error
+	err = gormDB.DB.Model(&orden).Updates(modelos.Orden{
+		ClienteID:     cId,
+		Asunto:        c.PostForm("asunto"),
+		Descripcion:   c.PostForm("descripcion"),
+	}).Error
 	if err != nil {
 		result = gin.H {
 			"status": 400,
 			"result": "No se pudo actualizar la orden",
 		}
+		c.JSON(400, result)
+		return
 	} else {
 		result = gin.H {
 			"status": 200,

@@ -12,7 +12,7 @@ import (
 func (gormDB *GormDB) ObtenerClientes(c *gin.Context) {
 	clientes := []modelos.Cliente{}
 
-	if err := gormDB.DB.Find(&clientes).Error; err != nil {
+	if err := gormDB.DB.Preload("Ordenes").Find(&clientes).Error; err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	}
 
@@ -23,7 +23,7 @@ func (gormDB *GormDB) ObtenerClienteSegunID(c *gin.Context) {
 	clientes := []modelos.Cliente{}
 	id := c.Param("ID")
 
-	if err := gormDB.DB.Find(&clientes, id).Error; err != nil {
+	if err := gormDB.DB.Preload("Ordenes").First(&clientes, id).Error; err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	}
 
@@ -67,16 +67,16 @@ func (gormDB *GormDB) ActualizarCliente(c *gin.Context) {
 		}
 	}
 
-	cliente.Nombre            = c.PostForm("nombre")
-	cliente.PrimerApellido    = c.PostForm("primer_apellido")
-	cliente.SegundoApellido   = c.PostForm("segundo_apellido")
-	cliente.Domicilio         = c.PostForm("domicilio")
-	cliente.Ciudad            = c.PostForm("ciudad")
-	cliente.EntidadFederativa = c.PostForm("entidad_federativa")
-	cliente.Telefono          = c.PostForm("telefono")
-	cliente.Email             = c.PostForm("email")
-
-	err = gormDB.DB.Save(&cliente).Error
+	err = gormDB.DB.Model(&cliente).Updates(modelos.Cliente{
+		Nombre:            c.PostForm("nombre"),
+		PrimerApellido:    c.PostForm("primer_apellido"),
+		SegundoApellido:   c.PostForm("segundo_apellido"),
+		Domicilio:         c.PostForm("domicilio"),
+		Ciudad:            c.PostForm("ciudad"),
+		EntidadFederativa: c.PostForm("entidad_federativa"),
+		Telefono:          c.PostForm("telefono"),
+		Email:             c.PostForm("email"),
+	}).Error
 	if err != nil {
 		result = gin.H {
 			"status": 400,
