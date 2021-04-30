@@ -13,7 +13,8 @@ import (
 func (gormDB *GormDB) ObtenerOrdenes(c *gin.Context) {
 	ordenes := []modelos.Orden{}
 
-	if err := gormDB.DB.Find(&ordenes).Error; err != nil {
+	// https://gorm.io/docs/preload.html
+	if err := gormDB.DB.Preload("OrdenComentarios").Find(&ordenes).Error; err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 	}
 
@@ -78,7 +79,7 @@ func (gormDB *GormDB) ActualizarOrden(c *gin.Context) {
 		result     gin.H
 	)
 
-	err := gormDB.DB.First(&orden, id).Error
+	err := gormDB.DB.Where("id = ?", id).First(&orden).Error
 	if err != nil {
 		result = gin.H {
 			"status": 400,
@@ -86,8 +87,8 @@ func (gormDB *GormDB) ActualizarOrden(c *gin.Context) {
 		}
 	}
 
-	t, err := time.Parse(time.RFC1123, c.PostForm("fecha_creacion"))
-	if err != nil {
+	_, errF := time.Parse(time.RFC1123, c.PostForm("fecha_creacion"))
+	if errF != nil {
 		result = gin.H {
 			"status": 400,
 			"result": "Error al convertir fecha",
@@ -95,7 +96,7 @@ func (gormDB *GormDB) ActualizarOrden(c *gin.Context) {
 		c.JSON(400, result)
 		return
 	}
-	idCl, errId := strconv.Atoi(c.PostForm("clienteID"))
+	_, errId := strconv.Atoi(c.PostForm("clienteID"))
 	if errId != nil {
 		result = gin.H {
 			"status": 400,
@@ -104,11 +105,7 @@ func (gormDB *GormDB) ActualizarOrden(c *gin.Context) {
 		c.JSON(400, result)
 		return
 	}
-
-	orden.FechaCreacion  = t
-	orden.ClienteID      = idCl
-	orden.Asunto         = c.PostForm("asunto")
-	orden.Descripcion    = c.PostForm("descripcion")
+	c.BindJSON(&orden)
 
 	err = gormDB.DB.Save(&orden).Error
 	if err != nil {

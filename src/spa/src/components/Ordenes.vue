@@ -7,13 +7,16 @@
                 id="barra-busqueda"
                 placeholder="Ingrese orden a buscar"
             />
-            <b-button @click="showModal" variant="primary" size="sm"
+            <b-button @click="crearOrden" variant="primary" size="sm"
                 >Añadir orden</b-button
             >
         </div>
         <!--https://stackoverflow.com/questions/61934264/how-to-disable-modal-ok-slot-of-b-modal-in-vue-bootstrap-->
         <b-modal v-model="isModalVisible" title="Añadir orden" hide-footer>
             <CrearOrden v-bind:orden="seleccion" @close="closeModal" />
+        </b-modal>
+        <b-modal v-model="isComentarioModalVisible" title="Añadir comentario" hide-footer>
+            <AgregarComentario v-bind:ordenID="seleccion" @close="closeComentarioModal" />
         </b-modal>
         <b-pagination
             v-model="currentPage"
@@ -27,20 +30,24 @@
             :per-page="perPage"
             :current-page="currentPage"
             :fields="columnas"
-            striped hover small selectable
-            @row-selected="onRowSelected"
-        >
-            <template #cell(acciones)="row">
+            @row-clicked="onRowClicked"
+            striped hover small selectable>
+
+            <template #cell(show_details)="row">
                 <b-button size="sm" @click="row.toggleDetails" class="mr-2">
-                    {{ row.detailsShowing ? "Cerrar" : "Ver" }} Detalles
+                {{ row.detailsShowing ? 'Hide' : 'Show'}} Details
                 </b-button>
             </template>
 
-            <template #row-details="">
-                <b-card>
+            <template #row-details="row">
+                <b-card class="mb-2">
+                    <b-table-lite 
+                        :fields="comentarioColumnas"
+                        :items="row.item.OrdenComentarios"></b-table-lite>
                     <b-row class="mb-2">
-                        <b-button @click="editarOrden" variant="info">Editar</b-button>
-                        <b-button @click="eliminarOrden" variant="danger">Eliminar</b-button>
+                        <b-button @click="agregarComentario(row)" variant="primary">Agregar comentario</b-button>
+                        <b-button @click="editarOrden(row)" variant="info">Editar</b-button>
+                        <b-button @click="eliminarOrden(row)" variant="danger">Eliminar</b-button>
                     </b-row>
                 </b-card>
             </template>
@@ -50,6 +57,7 @@
 
 <script>
 import CrearOrden from "./ordenes/CrearOrden";
+import AgregarComentario from './ordenes/AgregarComentario';
 const axios = require("axios");
 
 export default {
@@ -59,14 +67,16 @@ export default {
             currentPage: 1,
             perPage: 10,
             info: {},
-            columnas: ["FechaCreacion", "ClienteID", "Asunto", "Descripcion", "acciones"],
+            columnas: ["FechaCreacion", "ClienteID", "Asunto", "Descripcion"],
+            comentarioColumnas: ["FechaCreacion", "DescripcionSeguimiento"],
             search: "",
             seleccion: "",
             isModalVisible: false,
+            isComentarioModalVisible: false
         };
     },
     components: {
-        CrearOrden,
+        CrearOrden, AgregarComentario
     },
     mounted() {
         this.obtenerOrdenes();
@@ -91,8 +101,9 @@ export default {
         },
     },
     methods: {
-        onRowSelected(items) {
-            this.seleccion = items[0].ID
+        onRowClicked(item) {
+            // https://stackoverflow.com/questions/51836186/get-row-element-form-row-clicked-event
+            item._showDetails = !item._showDetails
         },
         showModal() {
             this.isModalVisible = true;
@@ -100,17 +111,33 @@ export default {
         closeModal() {
             this.isModalVisible = false;
         },
+        crearOrden() {
+            this.seleccion = "",
+            this.showModal()
+        },
         obtenerOrdenes() {
             axios
                 .get("http://localhost:10040/ordenes")
-                .then((response) => (this.info = response.data.data))
+                .then((response) => {
+                    const data = response.data.data
+                    // https://stackoverflow.com/questions/38922998/add-property-to-an-array-of-objects
+                    data.forEach(element => {
+                        element._showDetails = "false"
+                    });
+                    this.info = data
+                })
                 .catch((error) => console.log(error.response.data));
         },
-        editarOrden: function () {
-            this.seleccion = this.seleccion.toString();
-            this.isModalVisible = true;
+        agregarComentario: function (item) {
+            this.seleccion = item.item.ID
+            this.isComentarioModalVisible = true
         },
-        eliminarOrden: function () {
+        editarOrden: function (item) {
+            this.seleccion = item.item.ID
+            this.isModalVisible = true
+        },
+        eliminarOrden: function (item) {
+            this.seleccion = item.item.ID
             this.boxTwo = ''
             this.$bvModal.msgBoxConfirm("¿Deseas eliminar esta orden?", {
                 title: "Confirmar eliminar dato",

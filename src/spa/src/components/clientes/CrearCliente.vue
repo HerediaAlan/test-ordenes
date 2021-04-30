@@ -173,6 +173,7 @@ export default {
         },
         esEmailValido() {
             if (this.form.email) {
+                // Expresión obtenida de https://stackoverflow.com/questions/46155/how-to-validate-an-email-address-in-javascript 
                 const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 return re.test(this.form.email)
             } else {
@@ -215,7 +216,6 @@ export default {
             var formData = new FormData();
             // https://stackoverflow.com/questions/49162345/prevent-form-from-submitting-with-vue-js-and-axios
             if (!this.cliente) {
-                alert("POST")
                 formData.append("nombre", this.form.nombre);
                 formData.append("primer_apellido", this.form.primer_apellido);
                 formData.append("segundo_apellido", this.form.segundo_apellido);
@@ -240,7 +240,6 @@ export default {
                         console.log("error", response);
                     });
             } else {
-                alert("PUT")
                 formData.append("nombre", this.form.nombre);
                 formData.append("primer_apellido", this.form.primer_apellido);
                 formData.append("segundo_apellido", this.form.segundo_apellido);

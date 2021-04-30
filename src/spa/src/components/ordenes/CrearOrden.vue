@@ -1,23 +1,21 @@
 <template>
-    <b-form id="form-orden" v-on:submit.prevent="onSubmit">
+    <b-form id="form-orden" @submit="onSubmit">
         <div class="basicInputs">
-            <b-form-group
-                id="clienteGroup"
-                label="ID del cliente"
-                label-for="clienteInput"
-            >
+            <b-form-group id="clienteGroup" label="ID del cliente" label-for="clienteInput">
                 <b-form-input
                     id="clienteInput"
                     v-model="form.clienteID"
                     placeholder="Ej: 3"
+                    :state="esClienteValido"
+                    aria-describedby="input-live-feedback"
+                    trim
                 ></b-form-input>
+                <b-form-invalid-feedback id="input-live-feedback">
+                    Es necesario registrar una clave de cliente
+                </b-form-invalid-feedback>
             </b-form-group>
 
-            <b-form-group
-                id="asuntoGroup"
-                label="Asunto"
-                label-for="asuntoInput"
-            >
+            <b-form-group id="asuntoGroup" label="Asunto" label-for="asuntoInput">
                 <b-form-input
                     id="asuntoInput"
                     v-model="form.asunto"
@@ -36,23 +34,7 @@
                     placeholder="Ej: Se realizó una orden por medio de FB"
                 ></b-form-input>
             </b-form-group>
-
-            <b-form-group
-                id="comentarioGroup"
-                label="Comentario"
-                label-for="comentarioInput"
-            >
-                <b-form-input
-                    id="comentarioInput"
-                    v-model="form.descripcion_seguimiento"
-                    placeholder="Ej: Añadir paquete extra"
-                ></b-form-input>
-            </b-form-group>
         </div>
-
-        <b-form-group v-if="orden" id="comentariosGroup" label="Comentarios">
-            <b-table striped small :items="form.comentarios" :fields="form.comentarioColumnas"></b-table>
-        </b-form-group>
 
         <div class="buttons">
             <b-button @click="onSubmit" variant="primary">Guardar</b-button>
@@ -78,10 +60,7 @@ export default {
                 fecha_creacion: "",
                 clienteID: "",
                 asunto: "",
-                descripcion: "",
-                descripcion_seguimiento: "",
-                comentarios: [],
-                comentarioColumnas: ["FechaCreacion", "DescripcionSeguimiento"],
+                descripcion: ""
             },
         };
     },
@@ -94,6 +73,14 @@ export default {
         idOrden: function () {
             return this.orden.toString()
         },
+        esClienteValido() {
+            if (this.form.clienteID) {
+                const re = /^\d+$/
+                return re.test(this.form.clienteID)
+            } else {
+                return false
+            }
+        }
     },
     beforeMount() {
         this.obtenerDatos()
@@ -109,38 +96,21 @@ export default {
                     this.form.asunto = respuesta.Asunto;
                     this.form.descripcion = respuesta.Descripcion;
                 })
-                .then(() => {
-                    axios
-                        .get(
-                            "http://localhost:10040/ordenes/" +
-                                this.idOrden +
-                                "/comentarios"
-                        )
-                        .then((response) => {
-                            this.form.comentarios = response.data.result;
-                            console.log(this.form.comentarios)
-                        })
-                })
                 .catch(function (response) {
                     console.log("error", response);
                 })
         },
         onSubmit() {
+            if (!this.esClienteValido) {
+                return
+            }
             // https://stackoverflow.com/questions/49162345/prevent-form-from-submitting-with-vue-js-and-axios
             var formDataOrden = new FormData();
             var d = new Date();
             if (this.orden === "") {
                 formDataOrden.append(
                     "fecha_creacion",
-                    `${d.toLocaleString("default", {
-                        weekday: "short",
-                    })}, ${d.getDate()} ${d.toLocaleString("default", {
-                        month: "short",
-                    })} ${d.getFullYear()} ${("0" + d.getHours()).slice(
-                        -2
-                    )}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(
-                        -2
-                    )} MST`
+                    `${d.toLocaleString("default", {weekday: "short",})}, ${d.getDate()} ${d.toLocaleString("default", {month: "short",})} ${d.getFullYear()} ${("0" + d.getHours()).slice(-2)}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(-2)} MST`
                 );
                 formDataOrden.append("clienteID", this.form.clienteID);
                 formDataOrden.append("asunto", this.form.asunto);
@@ -158,15 +128,7 @@ export default {
                         var d = new Date();
                         formDataComentario.append(
                             "fecha_creacion",
-                            `${d.toLocaleString("default", {
-                                weekday: "short",
-                            })}, ${d.getDate()} ${d.toLocaleString("default", {
-                                month: "short",
-                            })} ${d.getFullYear()} ${("0" + d.getHours()).slice(
-                                -2
-                            )}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(
-                                -2
-                            )} MST`
+                            `${d.toLocaleString("default", {weekday: "short",})}, ${d.getDate()} ${d.toLocaleString("default", {month: "short",})} ${d.getFullYear()} ${("0" + d.getHours()).slice(-2)}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(-2)} MST`
                         );
                         formDataComentario.append(
                             "ordenID",
@@ -197,15 +159,7 @@ export default {
             } else {
                 formDataOrden.append(
                     "fecha_creacion",
-                    `${d.toLocaleString("default", {
-                        weekday: "short",
-                    })}, ${d.getDate()} ${d.toLocaleString("default", {
-                        month: "short",
-                    })} ${d.getFullYear()} ${("0" + d.getHours()).slice(
-                        -2
-                    )}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(
-                        -2
-                    )} MST`
+                    `${d.toLocaleString("default", {weekday: "short",})}, ${d.getDate()} ${d.toLocaleString("default", {month: "short",})} ${d.getFullYear()} ${("0" + d.getHours()).slice(-2)}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(-2)} MST`
                 );
                 formDataOrden.append("clienteID", this.form.clienteID);
                 formDataOrden.append("asunto", this.form.asunto);
@@ -234,7 +188,6 @@ export default {
 <style scoped>
 #form-orden {
     display: grid;
-    grid-template-columns: auto auto;
 }
 
 .buttons {
@@ -242,6 +195,5 @@ export default {
     justify-items: stretch;
     row-gap: 8px;
     width: 100%;
-    grid-column: 2;
 }
 </style>

@@ -7,11 +7,11 @@ import (
 
 type Orden struct {
 	gorm.Model
-	FechaCreacion time.Time `sql:type:"DATETIME NOT NULL CHARACTER SET utf8 COLLATE utf8_general_ci" json:"fechaCreacion"`
-	ClienteID     int
-	Asunto        string `sql:type:"NVARCHAR(100) NOT NULL CHARACTER SET utf8 COLLATE utf8_general_ci" json:"asunto"`
-	Descripcion   string `sql:type:"NVARCHAR(100) NOT NULL CHARACTER SET utf8 COLLATE utf8_general_ci" json:"descripcion"`
-	Comentarios   []OrdenComentario
+	FechaCreacion      time.Time `sql:type:"DATETIME NOT NULL CHARACTER SET utf8 COLLATE utf8_general_ci" json:"fechaCreacion"`
+	ClienteID          int
+	Asunto             string `sql:type:"NVARCHAR(100) NOT NULL CHARACTER SET utf8 COLLATE utf8_general_ci" json:"asunto"`
+	Descripcion        string `sql:type:"NVARCHAR(100) NOT NULL CHARACTER SET utf8 COLLATE utf8_general_ci" gorm:"constraint:OnDelete:CASCADE" json:"descripcion"`
+	OrdenComentarios   []OrdenComentario
 }
 
 func (c *Orden) TableName() string {
