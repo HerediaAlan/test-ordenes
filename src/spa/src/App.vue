@@ -3,12 +3,12 @@
         <div id="app">
             <div id="navBar">
                 <h2>API Ordenes</h2>
-                <router-link :to="{ name: 'Clientes' }" tag="a"
-                    >Clientes</router-link
-                >
-                <router-link :to="{ name: 'Ordenes' }" tag="a"
-                    >Ordenes</router-link
-                >
+                <b-navbar-nav>
+                    <b-nav-item :to="{ name: 'Clientes' }" tag="a">
+                        <b-icon icon="person-fill" class="mr-2"></b-icon>Clientes</b-nav-item>
+                    <b-nav-item :to="{ name: 'Ordenes' }" tag="a">
+                        <b-icon icon="inbox" class="mr-2"></b-icon>Ordenes</b-nav-item>
+                </b-navbar-nav>
             </div>
             <v-content>
                 <router-view />

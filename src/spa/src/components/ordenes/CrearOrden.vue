@@ -1,50 +1,59 @@
 <template>
     <b-form id="form-orden" v-on:submit.prevent="onSubmit">
-        <b-form-group
-            id="clienteGroup"
-            label="ID del cliente"
-            label-for="clienteInput">
-            <b-form-input
-                id="clienteInput"
-                v-model="form.clienteID"
-                placeholder="Ej: 3"
-            ></b-form-input>
+        <div class="basicInputs">
+            <b-form-group
+                id="clienteGroup"
+                label="ID del cliente"
+                label-for="clienteInput"
+            >
+                <b-form-input
+                    id="clienteInput"
+                    v-model="form.clienteID"
+                    placeholder="Ej: 3"
+                ></b-form-input>
+            </b-form-group>
+
+            <b-form-group
+                id="asuntoGroup"
+                label="Asunto"
+                label-for="asuntoInput"
+            >
+                <b-form-input
+                    id="asuntoInput"
+                    v-model="form.asunto"
+                    placeholder="Ej: Compra express"
+                ></b-form-input>
+            </b-form-group>
+
+            <b-form-group
+                id="descripcionGroup"
+                label="Descripcion"
+                label-for="descripcionInput"
+            >
+                <b-form-input
+                    id="descripcionInput"
+                    v-model="form.descripcion"
+                    placeholder="Ej: Se realizó una orden por medio de FB"
+                ></b-form-input>
+            </b-form-group>
+
+            <b-form-group
+                id="comentarioGroup"
+                label="Comentario"
+                label-for="comentarioInput"
+            >
+                <b-form-input
+                    id="comentarioInput"
+                    v-model="form.descripcion_seguimiento"
+                    placeholder="Ej: Añadir paquete extra"
+                ></b-form-input>
+            </b-form-group>
+        </div>
+
+        <b-form-group v-if="orden" id="comentariosGroup" label="Comentarios">
+            <b-table striped small :items="form.comentarios" :fields="form.comentarioColumnas"></b-table>
         </b-form-group>
 
-        <b-form-group 
-            id="asuntoGroup" 
-            label="Asunto" 
-            label-for="asuntoInput">
-            <b-form-input
-                id="asuntoInput"
-                v-model="form.asunto"
-                placeholder="Ej: Compra express"
-            ></b-form-input>
-        </b-form-group>
-
-        <b-form-group
-            id="descripcionGroup"
-            label="Descripcion"
-            label-for="descripcionInput"
-        >
-            <b-form-input
-                id="descripcionInput"
-                v-model="form.descripcion"
-                placeholder="Ej: Se realizó una orden por medio de FB"
-            ></b-form-input>
-        </b-form-group>
-
-        <b-form-group
-            id="comentarioGroup"
-            label="Comentario"
-            label-for="comentarioInput"
-        >
-            <b-form-input
-                id="comentarioInput"
-                v-model="form.comentario"
-                placeholder="Ej: Añadir paquete extra"
-            ></b-form-input>
-        </b-form-group>
         <div class="buttons">
             <b-button @click="onSubmit" variant="primary">Guardar</b-button>
             <b-button @click="close" variant="danger">Cancelar</b-button>
@@ -70,7 +79,9 @@ export default {
                 clienteID: "",
                 asunto: "",
                 descripcion: "",
-                comentario: "",
+                descripcion_seguimiento: "",
+                comentarios: [],
+                comentarioColumnas: ["FechaCreacion", "DescripcionSeguimiento"],
             },
         };
     },
@@ -81,11 +92,11 @@ export default {
     },
     computed: {
         idOrden: function () {
-            return this.orden.toString();
+            return this.orden.toString()
         },
     },
     beforeMount() {
-        this.obtenerDatos();
+        this.obtenerDatos()
     },
     methods: {
         obtenerDatos() {
@@ -93,36 +104,47 @@ export default {
                 .get("http://localhost:10040/ordenes/" + this.idOrden)
                 .then((response) => {
                     const respuesta = response.data.data;
-                    this.form.fechaCreacion = respuesta.FechaCreacion;
+                    this.form.fecha_creacion = respuesta.FechaCreacion;
                     this.form.clienteID = respuesta.ClienteID;
                     this.form.asunto = respuesta.Asunto;
                     this.form.descripcion = respuesta.Descripcion;
                 })
+                .then(() => {
+                    axios
+                        .get(
+                            "http://localhost:10040/ordenes/" +
+                                this.idOrden +
+                                "/comentarios"
+                        )
+                        .then((response) => {
+                            this.form.comentarios = response.data.result;
+                            console.log(this.form.comentarios)
+                        })
+                })
                 .catch(function (response) {
                     console.log("error", response);
-                });
+                })
         },
         onSubmit() {
             // https://stackoverflow.com/questions/49162345/prevent-form-from-submitting-with-vue-js-and-axios
             var formDataOrden = new FormData();
-            var d = new Date()
+            var d = new Date();
             if (this.orden === "") {
                 formDataOrden.append(
                     "fecha_creacion",
-                    `${d.toLocaleString("default", { weekday: "short" })}, ${d.getDate()} ${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()} ${('0' + d.getHours()).slice(-2)}:${d.getMinutes()}:${('0' + d.getSeconds()).slice(-2)} MST`
-                )
-                formDataOrden.append(
-                    "clienteID",
-                    this.form.clienteID
-                )
-                formDataOrden.append(
-                    "asunto",
-                    this.form.asunto
-                )
-                formDataOrden.append(
-                    "descripcion",
-                    this.form.descripcion
-                )
+                    `${d.toLocaleString("default", {
+                        weekday: "short",
+                    })}, ${d.getDate()} ${d.toLocaleString("default", {
+                        month: "short",
+                    })} ${d.getFullYear()} ${("0" + d.getHours()).slice(
+                        -2
+                    )}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(
+                        -2
+                    )} MST`
+                );
+                formDataOrden.append("clienteID", this.form.clienteID);
+                formDataOrden.append("asunto", this.form.asunto);
+                formDataOrden.append("descripcion", this.form.descripcion);
                 axios({
                     method: "post",
                     url: "http://localhost:10040/ordenes",
@@ -132,30 +154,41 @@ export default {
                     },
                 })
                     .then((response) => {
-                        var formDataComentario = new FormData()
+                        var formDataComentario = new FormData();
                         var d = new Date();
                         formDataComentario.append(
                             "fecha_creacion",
-                            `${d.toLocaleString("default", { weekday: "short" })}, ${d.getDate()} ${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()} ${('0' + d.getHours()).slice(-2)}:${d.getMinutes()}:${('0' + d.getSeconds()).slice(-2)} MST`
-                        )
+                            `${d.toLocaleString("default", {
+                                weekday: "short",
+                            })}, ${d.getDate()} ${d.toLocaleString("default", {
+                                month: "short",
+                            })} ${d.getFullYear()} ${("0" + d.getHours()).slice(
+                                -2
+                            )}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(
+                                -2
+                            )} MST`
+                        );
                         formDataComentario.append(
                             "ordenID",
                             response.data.result.ID
-                        )
+                        );
                         formDataComentario.append(
                             "descripcion_seguimiento",
                             this.form.descripcion_seguimiento
-                        )
+                        );
                         axios({
                             method: "post",
-                            url: "http://localhost:10040/ordenes/" + response.data.result.ID + "/comentarios",
+                            url:
+                                "http://localhost:10040/ordenes/" +
+                                response.data.result.ID +
+                                "/comentarios",
                             data: formDataComentario,
                             config: {
                                 headers: {
                                     "Content-Type": "multipart/form-data ",
                                 },
                             },
-                        })
+                        });
                     })
                     .then(this.close())
                     .catch(function (response) {
@@ -164,20 +197,19 @@ export default {
             } else {
                 formDataOrden.append(
                     "fecha_creacion",
-                    `${d.toLocaleString("default", { weekday: "short" })}, ${d.getDate()} ${d.toLocaleString("default", { month: "short" })} ${d.getFullYear()} ${('0' + d.getHours()).slice(-2)}:${d.getMinutes()}:${('0' + d.getSeconds()).slice(-2)} MST`
-                )
-                formDataOrden.append(
-                    "clienteID",
-                    this.form.clienteID
-                )
-                formDataOrden.append(
-                    "asunto",
-                    this.form.asunto
-                )
-                formDataOrden.append(
-                    "descripcion",
-                    this.form.descripcion
-                )
+                    `${d.toLocaleString("default", {
+                        weekday: "short",
+                    })}, ${d.getDate()} ${d.toLocaleString("default", {
+                        month: "short",
+                    })} ${d.getFullYear()} ${("0" + d.getHours()).slice(
+                        -2
+                    )}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(
+                        -2
+                    )} MST`
+                );
+                formDataOrden.append("clienteID", this.form.clienteID);
+                formDataOrden.append("asunto", this.form.asunto);
+                formDataOrden.append("descripcion", this.form.descripcion);
                 axios({
                     method: "put",
                     url: "http://localhost:10040/ordenes/" + this.idOrden,
@@ -200,10 +232,16 @@ export default {
 </script>
 
 <style scoped>
+#form-orden {
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
 .buttons {
     display: grid;
     justify-items: stretch;
     row-gap: 8px;
     width: 100%;
+    grid-column: 2;
 }
 </style>
