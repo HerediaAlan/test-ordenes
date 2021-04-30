@@ -1,5 +1,5 @@
 # Vue.js + Go REST API
-Proyecto integrador de una API con backend en Go, y vistas usando Vue.js, y Vue-Router
+Proyecto integrador de una API con backend en Go, y vistas usando Vue.js + Bootstrap-Vue
 
 ## Tecnologías utilizadas
 * Vue.js (frontend)

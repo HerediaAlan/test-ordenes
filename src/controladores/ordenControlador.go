@@ -4,10 +4,10 @@ package controladores
 
 import (
 	"time"
-	"test-ordenes/modelos"
-	"github.com/gin-gonic/gin"
 	"strconv"
 	"net/http"
+	"github.com/gin-gonic/gin"
+	"test-ordenes/modelos"
 )
 
 func (gormDB *GormDB) ObtenerOrdenes(c *gin.Context) {

@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"test-ordenes/modelos"
 	"github.com/brianvoe/gofakeit/v6"
+	"test-ordenes/modelos"
 )
 
 type GormDB struct {
@@ -52,6 +52,9 @@ func BuildGormDB() *gorm.DB {
 		}
 
 		for n := 0; n < 5; n++ {
+			// Convertir tiempo al formato RFC1123
+			// Wed, 02 Feb 2019 10:15:06 MST
+			// https://apuntes.de/golang/time-parseo-de-fechas/#gsc.tab=0
 			t, err := time.Parse(time.RFC1123, fechas[n])
 			if err == nil {
 				idCliente, err := strconv.Atoi(ids[n])
