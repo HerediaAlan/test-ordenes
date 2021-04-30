@@ -1,22 +1,45 @@
 <template>
-  <v-toolbar app id="menuBar">
-      <v-toolbar-title>Menu</v-toolbar-title>
-      <router-link :to="{ name: 'Clientes' }">Clientes</router-link>
-  </v-toolbar>
+    <div id="navBar">
+        <h2>API Ordenes</h2>
+        <b-navbar-nav>
+            <b-button-group vertical>
+                <b-button to="/" variant="primary-outline" class="d-flex align-items-center">
+                    <b-icon icon="house-door"></b-icon>
+                    <router-link :to="{ name:'Home' }">Inicio</router-link>
+                </b-button>
+                <b-button to="/clientes" variant="primary-outline" class="d-flex align-items-center">
+                    <b-icon icon="person-fill"></b-icon>
+                    <router-link :to="{ name:'Clientes' }">Clientes</router-link>
+                </b-button>
+                <b-button to="/ordenes" variant="primary-outline" class="d-flex align-items-center">
+                    <b-icon icon="inbox"></b-icon>
+                    <router-link :to="{ name:'Ordenes' }">Ordenes</router-link>
+                </b-button>
+            </b-button-group>
+        </b-navbar-nav>
+    </div>
 </template>
 
 <script>
-    import Clientes from './Clientes'
-
-    export default {
-        name: 'Menu',
-        components: Clientes
-    }
+// Basado fuertemente en https://github.com/ratracegrad/meal-prep/blob/master/src/components/AppNavigation.vue
+export default {
+    name: "Menu",
+    data() {
+        return {
+            appTitle: "EasyChef",
+            items: [
+                { title: "Menu", url: "/menu" },
+                { title: "Clientes", url: "/clientes" },
+                { title: "Ordenes", url: "/ordenes" },
+            ],
+        };
+    },
+};
 </script>
 
 <style scoped>
-    #menuBar {
-        width: 100px;
-        background: #212121;
-    }
+#menuBar {
+    width: 120px;
+    background: #212121;
+}
 </style>

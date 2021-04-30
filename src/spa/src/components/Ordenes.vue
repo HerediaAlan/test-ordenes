@@ -61,7 +61,7 @@ import AgregarComentario from './ordenes/AgregarComentario';
 const axios = require("axios");
 
 export default {
-    name: "Ordenes",
+    name: "ordenes",
     data() {
         return {
             currentPage: 1,

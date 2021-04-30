@@ -1,32 +1,20 @@
 <template>
-    <v-app>
-        <div id="app">
-            <div id="navBar">
-                <h2>API Ordenes</h2>
-                <b-navbar-nav>
-                    <b-nav-item :to="{ name: 'Clientes' }" tag="a">
-                        <b-icon icon="person-fill" class="mr-2"></b-icon>Clientes</b-nav-item>
-                    <b-nav-item :to="{ name: 'Ordenes' }" tag="a">
-                        <b-icon icon="inbox" class="mr-2"></b-icon>Ordenes</b-nav-item>
-                </b-navbar-nav>
-            </div>
-            <v-content>
-                <router-view />
-            </v-content>
-        </div>
-    </v-app>
+    <div id="app">
+        <Menu></Menu>
+        <router-view></router-view>
+    </div>
 </template>
 
 <script>
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
-import Clientes from "./components/Clientes";
-import Ordenes from "./components/Ordenes";
+import Menu from "./components/Menu";
 
 export default {
     name: "App",
-    components: Clientes,
-    Ordenes,
+    components: {
+        Menu
+    }
 };
 </script>
 

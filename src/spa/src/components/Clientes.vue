@@ -61,8 +61,7 @@ import CrearCliente from "./clientes/CrearCliente";
 const axios = require("axios");
 
 export default {
-    name: "Clientes",
-    title: "Clientes",
+    name: "clientes",
     data() {
         return {
             currentPage: 1,
