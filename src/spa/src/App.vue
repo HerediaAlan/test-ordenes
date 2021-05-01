@@ -14,6 +14,11 @@ export default {
     name: "App",
     components: {
         Menu
+    },
+    watch: {
+        '$route' (to) {
+            document.title = to.meta.title
+        }
     }
 };
 </script>
