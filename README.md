@@ -8,6 +8,7 @@ Proyecto integrador de una API con backend en Go, y vistas usando Vue.js + Boots
 * Gin (framework de backend para APIs)
 * Gorm (ORM de GO)
 * Axios.js (Cliente HTTP)
+* Moment.js (Framework dinámico para fechas en JS)
 * GoFakeIt (creador de datos falsos para propósitos de _testing_)
 
 ## Diagrama Entidad-Relación

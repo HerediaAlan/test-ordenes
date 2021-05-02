@@ -40,7 +40,11 @@ func (gormDB *GormDB) CrearOrden(c *gin.Context) {
 
 	// https://www.pauladamsmith.com/blog/2011/05/go_time.html
 	// https://apuntes.de/golang/time-parseo-de-fechas/#gsc.tab=0
-	t, err := time.Parse(time.RFC1123, c.PostForm("fecha_creacion"))
+	// https://stackoverflow.com/questions/20234104/how-to-format-current-time-using-a-yyyymmddhhmmss-format
+	// https://stackoverflow.com/questions/39178488/parsing-javascript-date-to-a-golang-date
+	t, err := time.Parse(
+		"Mon Jan 02 2006 15:04:05 GMT-0700 (Pacific Daylight Time)", 
+		c.PostForm("fecha_creacion"))
 	if err != nil {
 		result = gin.H {
 			"status": 400,
@@ -192,7 +196,9 @@ func (gormDB *GormDB) CrearOrdenComentario(c *gin.Context) {
 			"result": "No se encontró la orden",
 		}
 	} else {
-		t, err := time.Parse(time.RFC1123, c.PostForm("fecha_creacion"))
+		t, err := time.Parse(
+			"Mon Jan 02 2006 15:04:05 GMT-0700 (Pacific Daylight Time)", 
+			c.PostForm("fecha_creacion"))
 		if err != nil {
 			result = gin.H {
 				"status": 400,

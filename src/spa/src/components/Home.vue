@@ -12,12 +12,22 @@
             <span class="font-weight-bold">Cantidad de clientes por entidad federativa:</span>
             <b-table :items="filtrarPorEntidad" :fields="clientesColumnasEntidad" small></b-table>
         </div>
-        <div id="info-ordenes"></div>
+        <hr style="height: 2px; background-color: black;"/>
+        <div id="info-ordenes">
+            <h2>Información sobre ordenes</h2>
+
+            <span class="font-weight-bold">Cantidad de ordenes existentes:</span>
+            <p>{{ this.ordenes.length }}</p>
+
+            <span class="font-weight-bold">Promedio de tiempo de atención:</span>
+            <p>{{ this.calcularPromedioAtencion }} horas</p>
+        </div>
     </div>
 </template>
 
 <script> 
 const axios = require("axios");
+const moment = require("moment");
 
 export default {
     name: "home",
@@ -37,6 +47,7 @@ export default {
         },
         filtrarPorEntidad() {
             let datos = this.clientes
+            // Este snippet fué obtenido de: https://stackoverflow.com/a/46794337
             const result = [...datos.reduce((r, o) => {
                 const key = o.entidadFederativa;
                 
@@ -52,6 +63,27 @@ export default {
                 }, new Map).values()];
             
             return result.sort((a, b) => b.cantidad - a.cantidad)
+        },
+        calcularPromedioAtencion() {
+            // Este método retorna el promedio en horas del tiempo de 
+            // respuesta entre orden y último comentario de soporte.
+            // Función obtenida de: https://stackoverflow.com/a/45609104
+            var sum = 0;
+            this.ordenes.forEach((orden) => {
+                if (orden.OrdenComentarios.length > 0) {
+                    var fechaOrden = moment(orden.FechaCreacion);
+
+                    var comentario = orden.OrdenComentarios.slice(-1)[0];
+                    const fechaComentario = moment(new Date(comentario.FechaCreacion).toUTCString());
+
+                    var diff = moment.duration(fechaComentario.diff(fechaOrden));
+                    sum += diff.as('hours');
+                }
+            });
+
+            var avg = sum / (this.ordenes.length - 1);
+
+            return avg.toFixed(4);
         }
     },
     beforeMount() {
@@ -59,10 +91,6 @@ export default {
         this.obtenerOrdenes();
     },
     methods: {
-        groupBy(datos) {
-            const entidades = datos.map(x => x.entidadFederativa);
-            return entidades.unique();
-        },
         obtenerDatos() {
             axios
                 .get("http://localhost:10040/clientes")
@@ -80,10 +108,13 @@ export default {
                 .get("http://localhost:10040/ordenes")
                 .then((response) => {
                     const dataOrdenes = response.data.data;
+                    dataOrdenes.forEach((element) => {
+                        element.FechaCreacion = new Date(element.FechaCreacion).toUTCString()
+                    })
                     this.ordenes = dataOrdenes;
                 })
                 .catch((error) => console.log(error.response.data));
-        }
+        },
     }
 }
 </script>

@@ -122,6 +122,12 @@ export default {
                     const data = response.data.data
                     // https://stackoverflow.com/questions/38922998/add-property-to-an-array-of-objects
                     data.forEach(element => {
+                        element.FechaCreacion = new Date(element.FechaCreacion).toUTCString()
+                        if (element.OrdenComentarios.length > 0) {
+                            element.OrdenComentarios.forEach((comentario) => {
+                                comentario.FechaCreacion = new Date(comentario.FechaCreacion).toUTCString()
+                            })
+                        }
                         element._showDetails = false
                     });
                     this.info = data

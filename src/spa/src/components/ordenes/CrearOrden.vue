@@ -119,12 +119,11 @@ export default {
             }
             // https://stackoverflow.com/questions/49162345/prevent-form-from-submitting-with-vue-js-and-axios
             var formDataOrden = new FormData();
-            var d = new Date();
             if (this.orden === "") {
                 alert("POST")
                 formDataOrden.append(
                     "fecha_creacion",
-                    `${d.toLocaleString("default", {weekday: "short",})}, ${d.getDate()} ${d.toLocaleString("default", {month: "short",})} ${d.getFullYear()} ${("0" + d.getHours()).slice(-2)}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(-2)} MST`
+                    new Date()
                 );
                 formDataOrden.append("clienteID", this.form.clienteID);
                 formDataOrden.append("asunto", this.form.asunto);
@@ -139,10 +138,9 @@ export default {
                 })
                     .then((response) => {
                         var formDataComentario = new FormData();
-                        var d = new Date();
                         formDataComentario.append(
                             "fecha_creacion",
-                            `${d.toLocaleString("default", {weekday: "short",})}, ${d.getDate()} ${d.toLocaleString("default", {month: "short",})} ${d.getFullYear()} ${("0" + d.getHours()).slice(-2)}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(-2)} MST`
+                            new Date()
                         );
                         formDataComentario.append(
                             "ordenID",
