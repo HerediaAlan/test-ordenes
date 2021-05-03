@@ -120,10 +120,9 @@ export default {
             // https://stackoverflow.com/questions/49162345/prevent-form-from-submitting-with-vue-js-and-axios
             var formDataOrden = new FormData();
             if (this.orden === "") {
-                alert("POST")
                 formDataOrden.append(
                     "fecha_creacion",
-                    new Date()
+                    new Date().toUTCString()
                 );
                 formDataOrden.append("clienteID", this.form.clienteID);
                 formDataOrden.append("asunto", this.form.asunto);
@@ -140,7 +139,7 @@ export default {
                         var formDataComentario = new FormData();
                         formDataComentario.append(
                             "fecha_creacion",
-                            new Date()
+                            new Date().toUTCString()
                         );
                         formDataComentario.append(
                             "ordenID",

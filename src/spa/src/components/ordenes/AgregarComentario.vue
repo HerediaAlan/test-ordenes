@@ -66,9 +66,7 @@ export default {
                 return
             } else {
                 var formData = new FormData()
-                var d = new Date()
-                formData.append("fecha_creacion", 
-                    `${d.toLocaleString("default", {weekday: "short",})}, ${d.getDate()} ${d.toLocaleString("default", {month: "short",})} ${d.getFullYear()} ${("0" + d.getHours()).slice(-2)}:${d.getMinutes()}:${("0" + d.getSeconds()).slice(-2)} MST`)
+                formData.append("fecha_creacion", new Date().toUTCString())
                 formData.append("ordenID", this.idOrden)
                 formData.append("descripcion_seguimiento", this.form.descripcion_seguimiento)
                 axios({
